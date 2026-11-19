@@ -15,7 +15,7 @@
             <ui:Button Content="{loc:L Log_CopyDiagnostics}" Command="{Binding CopyDiagnosticsCommand}" Appearance="Primary" Margin="8,0,0,0" />
             <ui:Button Content="{loc:L Log_Clear}" Command="{Binding ClearCommand}" Margin="8,0,0,0" />
         </StackPanel>
-        <ListBox x:Name="List" Grid.Row="2" ItemsSource="{Binding Entries}"
+        <ListBox x:Name="List" Background="Transparent" loc:WheelScroll.Enabled="True" Grid.Row="2" ItemsSource="{Binding Entries}"
                  ScrollViewer.HorizontalScrollBarVisibility="Disabled">
             <ListBox.ItemTemplate>
                 <DataTemplate>
