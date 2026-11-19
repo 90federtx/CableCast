@@ -1,0 +1,35 @@
+<Page x:Class="CableCast.Views.ProfilesPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+      xmlns:loc="clr-namespace:CableCast.Services">
+    <StackPanel Margin="32,24,32,24" MaxWidth="720" HorizontalAlignment="Left">
+        <ui:TextBlock Text="{loc:L Profiles_Title}" FontTypography="Title" Margin="0,0,0,8" />
+        <ui:TextBlock Text="{loc:L Profiles_Help}" TextWrapping="Wrap" Margin="0,0,0,16"
+                      Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+        <ui:Card Padding="24">
+            <StackPanel>
+                <ui:TextBlock Text="{Binding Active}" FontTypography="BodyStrong" Margin="0,0,0,12" />
+                <ListBox ItemsSource="{Binding Profiles}" SelectedItem="{Binding Selected}" MaxHeight="220">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Name}" Padding="4" />
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+                <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+                    <ui:Button Content="{loc:L Profiles_Apply}" Command="{Binding ApplyCommand}" Appearance="Primary" />
+                    <ui:Button Content="{loc:L Profiles_Delete}" Command="{Binding DeleteCommand}" Margin="8,0,0,0" />
+                </StackPanel>
+
+                <ui:TextBlock Text="{loc:L Profiles_SaveHeader}" FontTypography="BodyStrong" Margin="0,24,0,8" />
+                <ui:TextBox Text="{Binding NewName, UpdateSourceTrigger=PropertyChanged}"
+                            PlaceholderText="{loc:L Profiles_NamePlaceholder}" MaxLength="60" />
+                <ui:Button Content="{loc:L Profiles_SaveAs}" Command="{Binding SaveAsCommand}" Margin="0,8,0,0" />
+
+                <ui:TextBlock Text="{Binding Message}" Margin="0,16,0,0" TextWrapping="Wrap"
+                              Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+            </StackPanel>
+        </ui:Card>
+    </StackPanel>
+</Page>

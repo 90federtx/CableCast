@@ -1,0 +1,7 @@
+bin/
+obj/
+artifacts/
+.vs/
+*.user
+# scrcpy si scarica con scripts/fetch-scrcpy.ps1 (versione e SHA256 in scrcpy.lock.json)
+src/CableCast/tools/scrcpy/

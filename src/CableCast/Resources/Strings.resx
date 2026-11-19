@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <data name="Nav_Home" xml:space="preserve"><value>Telefono</value></data>
+  <data name="Nav_Settings" xml:space="preserve"><value>Impostazioni</value></data>
+  <data name="Nav_Profiles" xml:space="preserve"><value>Profili</value></data>
+  <data name="Nav_Log" xml:space="preserve"><value>Registro</value></data>
+  <data name="Nav_About" xml:space="preserve"><value>Informazioni</value></data>
+  <data name="Tray_Open" xml:space="preserve"><value>Apri</value></data>
+  <data name="Tray_Exit" xml:space="preserve"><value>Esci</value></data>
+  <data name="Tray_StillRunning" xml:space="preserve"><value>{0} è ancora in esecuzione nell'area di notifica.</value></data>
+  <data name="About_Title" xml:space="preserve"><value>Informazioni</value></data>
+  <data name="About_Version" xml:space="preserve"><value>{0} versione {1}</value></data>
+  <data name="About_Description" xml:space="preserve"><value>Mostra e controlla il telefono Android dal PC tramite cavo USB, pensato per giocare con un controller collegato al computer. Il lavoro vero lo fa scrcpy: questa app è solo un'interfaccia semplice.</value></data>
+  <data name="About_Credits" xml:space="preserve"><value>Crediti</value></data>
+  <data name="About_ScrcpyLine" xml:space="preserve"><value>scrcpy {0} (Genymobile e collaboratori), licenza Apache 2.0. Incluso senza modifiche, dalla release ufficiale.</value></data>
+  <data name="About_OtherCredits" xml:space="preserve"><value>Interfaccia: WPF-UI (MIT) e CommunityToolkit.Mvvm (MIT). Il testo completo delle licenze è nel file delle note di terze parti.</value></data>
+  <data name="About_OpenScrcpy" xml:space="preserve"><value>Sito di scrcpy</value></data>
+  <data name="About_OpenNotices" xml:space="preserve"><value>Note di terze parti</value></data>
+  <data name="About_OpenScrcpyLicense" xml:space="preserve"><value>Licenza di scrcpy</value></data>
+  <data name="About_OpenFailed" xml:space="preserve"><value>Impossibile aprire: {0}</value></data>
+
+  <data name="Home_Title" xml:space="preserve"><value>Il tuo telefono</value></data>
+  <data name="Home_CheckNow" xml:space="preserve"><value>Controlla ora</value></data>
+  <data name="Home_OpenWizard" xml:space="preserve"><value>Guida passo passo</value></data>
+  <data name="Home_Searching_Title" xml:space="preserve"><value>Ricerca in corso…</value></data>
+  <data name="Home_Searching_Text" xml:space="preserve"><value>Sto cercando il telefono collegato.</value></data>
+  <data name="Home_AdbUnavailable_Title" xml:space="preserve"><value>Componente adb non disponibile</value></data>
+  <data name="Home_AdbUnavailable_Text" xml:space="preserve"><value>Non riesco a usare adb, il componente che parla con il telefono. Riprovo automaticamente; se il problema resta, reinstalla {0}. Dettaglio: {1}</value></data>
+  <data name="Home_NoDevice_Title" xml:space="preserve"><value>Telefono non collegato</value></data>
+  <data name="Home_NoDevice_Text" xml:space="preserve"><value>Collega il telefono al PC con un cavo USB che trasmetta anche i dati (non solo la ricarica).</value></data>
+  <data name="Home_UsbDebuggingOff_Title" xml:space="preserve"><value>Debug USB spento</value></data>
+  <data name="Home_UsbDebuggingOff_Text" xml:space="preserve"><value>Windows vede il telefono ({0}) ma il debug USB non è attivo. Segui la guida per attivarlo.</value></data>
+  <data name="Home_Unauthorized_Title" xml:space="preserve"><value>Telefono non autorizzato</value></data>
+  <data name="Home_Unauthorized_Text" xml:space="preserve"><value>Sul telefono dovrebbe comparire la richiesta "Consentire il debug USB?". Spunta "Consenti sempre da questo computer" e tocca Consenti.</value></data>
+  <data name="Home_Offline_Title" xml:space="preserve"><value>Telefono non risponde</value></data>
+  <data name="Home_Offline_Text" xml:space="preserve"><value>Il telefono è visto ma non risponde (stato: {0}). Scollega e ricollega il cavo, poi sblocca lo schermo.</value></data>
+  <data name="Home_Ready_Title" xml:space="preserve"><value>Pronto</value></data>
+  <data name="Home_Ready_Text" xml:space="preserve"><value>{0} è collegato e pronto.</value></data>
+
+  <data name="Wizard_Title" xml:space="preserve"><value>Attiva il debug USB</value></data>
+  <data name="Wizard_Intro" xml:space="preserve"><value>Serve una sola volta. Le voci possono avere nomi leggermente diversi in base alla marca del telefono.</value></data>
+  <data name="Wizard_Step1_Title" xml:space="preserve"><value>1. Sblocca le Opzioni sviluppatore</value></data>
+  <data name="Wizard_Step1_Text" xml:space="preserve"><value>Vai in Impostazioni › Info sul telefono (o Informazioni sul dispositivo) e tocca 7 volte "Numero build" (su alcuni telefoni è dentro "Informazioni software"). Se richiesto, inserisci il PIN.</value></data>
+  <data name="Wizard_Step2_Title" xml:space="preserve"><value>2. Attiva il debug USB</value></data>
+  <data name="Wizard_Step2_Text" xml:space="preserve"><value>Vai in Impostazioni › Sistema › Opzioni sviluppatore (o direttamente nelle Impostazioni, in fondo) e attiva "Debug USB".</value></data>
+  <data name="Wizard_Step3_Title" xml:space="preserve"><value>3. Collega il cavo e accetta</value></data>
+  <data name="Wizard_Step3_Text" xml:space="preserve"><value>Collega il telefono al PC. Quando compare "Consentire il debug USB?" spunta "Consenti sempre" e tocca Consenti.</value></data>
+  <data name="Wizard_Step4_Title" xml:space="preserve"><value>4. Controlla la modalità USB</value></data>
+  <data name="Wizard_Step4_Text" xml:space="preserve"><value>Se il telefono non viene trovato, abbassa la tendina delle notifiche, tocca "Ricarica via USB" e scegli "Trasferimento file".</value></data>
+  <data name="Wizard_Status" xml:space="preserve"><value>Stato attuale: {0}</value></data>
+  <data name="Wizard_Back" xml:space="preserve"><value>Torna al telefono</value></data>
+  <data name="Home_Start" xml:space="preserve"><value>Avvia mirroring</value></data>
+  <data name="Home_Stop" xml:space="preserve"><value>Ferma mirroring</value></data>
+  <data name="Home_Starting" xml:space="preserve"><value>Avvio in corso…</value></data>
+  <data name="Home_Stopping" xml:space="preserve"><value>Arresto in corso…</value></data>
+  <data name="Home_Running" xml:space="preserve"><value>Mirroring attivo</value></data>
+  <data name="Log_Starting" xml:space="preserve"><value>Avvio mirroring di {0}…</value></data>
+  <data name="Log_Stopped" xml:space="preserve"><value>Mirroring fermato.</value></data>
+  <data name="Log_ClosedByUser" xml:space="preserve"><value>La finestra del mirroring è stata chiusa.</value></data>
+  <data name="Log_PhoneLost" xml:space="preserve"><value>Il telefono non è più pronto: fermo il mirroring.</value></data>
+  <data name="Err_ScrcpyMissing" xml:space="preserve"><value>scrcpy non trovato in "{0}". Reinstalla l'app.</value></data>
+  <data name="Err_StartFailed" xml:space="preserve"><value>Impossibile avviare scrcpy: {0}</value></data>
+  <data name="Err_StopFailed" xml:space="preserve"><value>Problema nell'arresto di scrcpy: {0}</value></data>
+  <data name="Err_ScrcpyExit" xml:space="preserve"><value>scrcpy si è chiuso con un errore (codice {0}). Apri il Log per i dettagli.</value></data>
+  <data name="Err_AoaNeedsUsb" xml:space="preserve"><value>La modalità gamepad AOA funziona solo con il cavo USB. Collega il telefono via USB oppure scegli UHID.</value></data>
+  <data name="Err_Unauthorized" xml:space="preserve"><value>Il telefono non ha autorizzato questo PC. Sblocca il telefono e tocca "Consenti" sulla richiesta di debug USB.</value></data>
+  <data name="Err_Offline" xml:space="preserve"><value>Il telefono risulta offline. Scollega e ricollega il cavo, poi riprova.</value></data>
+  <data name="Err_NoDevice" xml:space="preserve"><value>Nessun telefono trovato. Controlla il cavo e che il debug USB sia attivo.</value></data>
+  <data name="Err_Disconnected" xml:space="preserve"><value>Il telefono è stato scollegato durante il mirroring.</value></data>
+  <data name="Err_AdbDaemon" xml:space="preserve"><value>Il servizio adb non risponde. Riprova tra qualche secondo: l'app lo riavvia in automatico.</value></data>
+  <data name="Err_ServerConnection" xml:space="preserve"><value>Connessione al telefono non riuscita. Scollega e ricollega il cavo e riprova.</value></data>
+  <data name="Err_Uhid" xml:space="preserve"><value>Il gamepad UHID non è disponibile su questo telefono. Prova la modalità AOA (solo USB) oppure disattiva il gamepad.</value></data>
+  <data name="Err_Aoa" xml:space="preserve"><value>Impossibile usare il gamepad AOA. Serve il cavo USB e un telefono non in uso da altri programmi. In alternativa usa UHID.</value></data>
+  <data name="Err_Encoder" xml:space="preserve"><value>Il telefono non riesce a codificare il video con queste impostazioni. Abbassa risoluzione, FPS o bitrate.</value></data>
+  <data name="Err_InjectEvents" xml:space="preserve"><value>Il telefono rifiuta i comandi dal PC. Su alcuni modelli serve attivare "Debug USB (impostazioni di sicurezza)" nelle Opzioni sviluppatore.</value></data>
+  <data name="Settings_Title" xml:space="preserve"><value>Impostazioni mirroring</value></data>
+  <data name="Settings_Resolution" xml:space="preserve"><value>Risoluzione massima</value></data>
+  <data name="Settings_Fps" xml:space="preserve"><value>FPS massimi</value></data>
+  <data name="Settings_Bitrate" xml:space="preserve"><value>Bitrate video (Mbit/s)</value></data>
+  <data name="Settings_Audio" xml:space="preserve"><value>Trasmetti l'audio del telefono sul PC</value></data>
+  <data name="Settings_ScreenOff" xml:space="preserve"><value>Spegni lo schermo del telefono</value></data>
+  <data name="Settings_StayAwake" xml:space="preserve"><value>Mantieni il telefono sveglio</value></data>
+  <data name="Settings_OnTop" xml:space="preserve"><value>Finestra sempre in primo piano</value></data>
+  <data name="Settings_Fullscreen" xml:space="preserve"><value>Schermo intero</value></data>
+  <data name="Settings_WindowTitle" xml:space="preserve"><value>Titolo finestra (vuoto = automatico)</value></data>
+  <data name="Settings_Gamepad" xml:space="preserve"><value>Gamepad</value></data>
+  <data name="Settings_GamepadHelp" xml:space="preserve"><value>UHID: il gamepad collegato al PC appare come un controller reale sul telefono; funziona anche via Wi-Fi ed è la scelta consigliata. AOA: emula il gamepad tramite il cavo USB, funziona solo con USB e va provata se UHID non è riconosciuto dal gioco.</value></data>
+  <data name="Gamepad_Disabled" xml:space="preserve"><value>Disattivato</value></data>
+  <data name="Gamepad_Uhid" xml:space="preserve"><value>UHID (consigliato)</value></data>
+  <data name="Gamepad_Aoa" xml:space="preserve"><value>AOA (solo USB)</value></data>
+  <data name="Res_Original" xml:space="preserve"><value>Originale</value></data>
+  <data name="Log_Title" xml:space="preserve"><value>Registro eventi</value></data>
+  <data name="Log_Clear" xml:space="preserve"><value>Svuota</value></data>
+  <data name="Log_Copy" xml:space="preserve"><value>Copia log</value></data>
+  <data name="Profile_LowLatency" xml:space="preserve"><value>Bassa latenza (PS Remote Play)</value></data>
+  <data name="Profile_HighQuality" xml:space="preserve"><value>Qualità alta</value></data>
+  <data name="Profiles_Title" xml:space="preserve"><value>Profili</value></data>
+  <data name="Profiles_Help" xml:space="preserve"><value>Un profilo è un insieme di impostazioni salvato con un nome. Applicalo per cambiarle tutte in un colpo solo.</value></data>
+  <data name="Profiles_Apply" xml:space="preserve"><value>Applica</value></data>
+  <data name="Profiles_Delete" xml:space="preserve"><value>Elimina</value></data>
+  <data name="Profiles_SaveHeader" xml:space="preserve"><value>Salva le impostazioni attuali come profilo</value></data>
+  <data name="Profiles_NamePlaceholder" xml:space="preserve"><value>Nome del profilo</value></data>
+  <data name="Profiles_SaveAs" xml:space="preserve"><value>Salva profilo</value></data>
+  <data name="Profiles_Active" xml:space="preserve"><value>Profilo attivo: {0}</value></data>
+  <data name="Profiles_Applied" xml:space="preserve"><value>Profilo «{0}» applicato.</value></data>
+  <data name="Profiles_Saved" xml:space="preserve"><value>Profilo «{0}» salvato.</value></data>
+  <data name="Profiles_Deleted" xml:space="preserve"><value>Profilo «{0}» eliminato.</value></data>
+  <data name="Profiles_NameReserved" xml:space="preserve"><value>«{0}» è il nome di un profilo predefinito: scegli un altro nome.</value></data>
+  <data name="Log_SettingsCorrupt" xml:space="preserve"><value>Il file delle impostazioni non è leggibile, uso i valori predefiniti ({0}).</value></data>
+  <data name="Log_SettingsSaveFailed" xml:space="preserve"><value>Impossibile salvare le impostazioni: {0}</value></data>
+  <data name="Log_DiagnosticsCopied" xml:space="preserve"><value>Diagnostica copiata negli appunti.</value></data>
+  <data name="Log_CopyDiagnostics" xml:space="preserve"><value>Copia diagnostica</value></data>
+</root>

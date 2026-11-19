@@ -1,0 +1,44 @@
+<Page x:Class="CableCast.Views.WizardPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+      xmlns:loc="clr-namespace:CableCast.Services">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="32,24,32,24" MaxWidth="720" HorizontalAlignment="Left">
+            <ui:TextBlock Text="{loc:L Wizard_Title}" FontTypography="Title" />
+            <ui:TextBlock Text="{loc:L Wizard_Intro}" Margin="0,8,0,16" TextWrapping="Wrap"
+                          Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+
+            <ui:Card Padding="20" Margin="0,0,0,10">
+                <StackPanel>
+                    <ui:TextBlock Text="{loc:L Wizard_Step1_Title}" FontTypography="BodyStrong" />
+                    <ui:TextBlock Text="{loc:L Wizard_Step1_Text}" Margin="0,6,0,0" TextWrapping="Wrap" />
+                </StackPanel>
+            </ui:Card>
+            <ui:Card Padding="20" Margin="0,0,0,10">
+                <StackPanel>
+                    <ui:TextBlock Text="{loc:L Wizard_Step2_Title}" FontTypography="BodyStrong" />
+                    <ui:TextBlock Text="{loc:L Wizard_Step2_Text}" Margin="0,6,0,0" TextWrapping="Wrap" />
+                </StackPanel>
+            </ui:Card>
+            <ui:Card Padding="20" Margin="0,0,0,10">
+                <StackPanel>
+                    <ui:TextBlock Text="{loc:L Wizard_Step3_Title}" FontTypography="BodyStrong" />
+                    <ui:TextBlock Text="{loc:L Wizard_Step3_Text}" Margin="0,6,0,0" TextWrapping="Wrap" />
+                </StackPanel>
+            </ui:Card>
+            <ui:Card Padding="20" Margin="0,0,0,16">
+                <StackPanel>
+                    <ui:TextBlock Text="{loc:L Wizard_Step4_Title}" FontTypography="BodyStrong" />
+                    <ui:TextBlock Text="{loc:L Wizard_Step4_Text}" Margin="0,6,0,0" TextWrapping="Wrap" />
+                </StackPanel>
+            </ui:Card>
+
+            <ui:TextBlock Text="{Binding StatusLine}" Margin="0,0,0,12" />
+            <StackPanel Orientation="Horizontal">
+                <ui:Button Content="{loc:L Home_CheckNow}" Command="{Binding CheckNowCommand}" Appearance="Primary" />
+                <ui:Button Content="{loc:L Wizard_Back}" Command="{Binding BackCommand}" Margin="8,0,0,0" />
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

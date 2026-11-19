@@ -1,0 +1,36 @@
+<Page x:Class="CableCast.Views.SettingsPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+      xmlns:loc="clr-namespace:CableCast.Services">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="32,24,32,24" MaxWidth="720" HorizontalAlignment="Left">
+            <ui:TextBlock Text="{loc:L Settings_Title}" FontTypography="Title" Margin="0,0,0,16" />
+            <ui:Card Padding="24">
+                <StackPanel>
+                    <TextBlock Text="{loc:L Settings_Resolution}" />
+                    <ComboBox ItemsSource="{Binding Resolutions}" DisplayMemberPath="Label" SelectedValuePath="Value"
+                              SelectedValue="{Binding Settings.MaxSize, Mode=TwoWay}" Margin="0,4,0,12" MinWidth="200" HorizontalAlignment="Left" />
+                    <TextBlock Text="{loc:L Settings_Fps}" />
+                    <ComboBox ItemsSource="{Binding FpsOptions}" DisplayMemberPath="Label" SelectedValuePath="Value"
+                              SelectedValue="{Binding Settings.MaxFps, Mode=TwoWay}" Margin="0,4,0,12" MinWidth="200" HorizontalAlignment="Left" />
+                    <TextBlock Text="{loc:L Settings_Bitrate}" />
+                    <ComboBox ItemsSource="{Binding Bitrates}" DisplayMemberPath="Label" SelectedValuePath="Value"
+                              SelectedValue="{Binding Settings.VideoBitRateMbit, Mode=TwoWay}" Margin="0,4,0,12" MinWidth="200" HorizontalAlignment="Left" />
+                    <CheckBox Content="{loc:L Settings_Audio}" IsChecked="{Binding Settings.AudioEnabled, Mode=TwoWay}" />
+                    <CheckBox Content="{loc:L Settings_ScreenOff}" IsChecked="{Binding Settings.TurnScreenOff, Mode=TwoWay}" />
+                    <CheckBox Content="{loc:L Settings_StayAwake}" IsChecked="{Binding Settings.StayAwake, Mode=TwoWay}" />
+                    <CheckBox Content="{loc:L Settings_OnTop}" IsChecked="{Binding Settings.AlwaysOnTop, Mode=TwoWay}" />
+                    <CheckBox Content="{loc:L Settings_Fullscreen}" IsChecked="{Binding Settings.Fullscreen, Mode=TwoWay}" />
+                    <TextBlock Text="{loc:L Settings_WindowTitle}" Margin="0,12,0,0" />
+                    <ui:TextBox Text="{Binding Settings.WindowTitle, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,12" />
+                    <TextBlock Text="{loc:L Settings_Gamepad}" />
+                    <ComboBox ItemsSource="{Binding Gamepads}" DisplayMemberPath="Label" SelectedValuePath="Mode"
+                              SelectedValue="{Binding Settings.Gamepad, Mode=TwoWay}" Margin="0,4,0,8" MinWidth="200" HorizontalAlignment="Left" />
+                    <ui:TextBlock Text="{loc:L Settings_GamepadHelp}" TextWrapping="Wrap"
+                                  Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                </StackPanel>
+            </ui:Card>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

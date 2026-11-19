@@ -1,0 +1,27 @@
+<Page x:Class="CableCast.Views.LogPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+      xmlns:loc="clr-namespace:CableCast.Services">
+    <Grid Margin="32,24,32,24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <ui:TextBlock Text="{loc:L Log_Title}" FontTypography="Title" Margin="0,0,0,12" />
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,12">
+            <ui:Button Content="{loc:L Log_Copy}" Command="{Binding CopyCommand}" />
+            <ui:Button Content="{loc:L Log_CopyDiagnostics}" Command="{Binding CopyDiagnosticsCommand}" Appearance="Primary" Margin="8,0,0,0" />
+            <ui:Button Content="{loc:L Log_Clear}" Command="{Binding ClearCommand}" Margin="8,0,0,0" />
+        </StackPanel>
+        <ListBox x:Name="List" Grid.Row="2" ItemsSource="{Binding Entries}"
+                 ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding}" TextWrapping="Wrap" FontFamily="Consolas" FontSize="12" />
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </Grid>
+</Page>
