@@ -11,7 +11,7 @@ Mostra e controlla il tuo telefono Android sul PC tramite cavo USB. Pensato sopr
 
 ## Installazione
 
-1. Esegui `CableCast-Setup-1.0.0.exe` e segui la procedura guidata.
+1. Esegui `CableCast-Setup-1.1.0.exe` e segui la procedura guidata.
 2. Avvia CableCast dal menu Start.
 
 ## Preparare il telefono (una sola volta)
