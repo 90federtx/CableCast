@@ -11,6 +11,14 @@ public sealed class DeviceMonitor : IDisposable
     private CancellationTokenSource? _cts;
     private int _consecutiveFailures;
     private readonly SemaphoreSlim _gate = new(1, 1);
+    private AdbDeviceInfo _deviceInfo = AdbDeviceInfo.Empty;
+    private string? _deviceInfoSerial;
+    private int _disconnectedCycles;
+    public AdbDeviceInfo DeviceInfo => Volatile.Read(ref _deviceInfo);
+    private static bool IsMetadataIncomplete(AdbDeviceInfo info) =>
+        string.IsNullOrWhiteSpace(info.Manufacturer)
+        || string.IsNullOrWhiteSpace(info.Model)
+        || string.IsNullOrWhiteSpace(info.AndroidVersion);
 
     public DeviceMonitor(IAdbService adb, IUsbProbe usb, TimeSpan? interval = null)
     {
@@ -65,7 +73,56 @@ public sealed class DeviceMonitor : IDisposable
                 catch { /* suggerimento facoltativo */ }
             }
 
+            var ready = query.Devices.FirstOrDefault(d => d.State == "device");
+            if (ready is not null &&
+                (_deviceInfoSerial != ready.Serial || IsMetadataIncomplete(_deviceInfo)))
+            {
+                try
+                {
+                    var info = await _adb.GetDeviceInfoAsync(ready.Serial, ct).ConfigureAwait(false);
+                    if (!string.IsNullOrWhiteSpace(info.Manufacturer)
+                        || !string.IsNullOrWhiteSpace(info.Model)
+                        || !string.IsNullOrWhiteSpace(info.AndroidVersion))
+                    {
+                        Volatile.Write(ref _deviceInfo, info);
+                        _deviceInfoSerial = ready.Serial;
+                    }
+                    ready = ready with
+                    {
+                        Manufacturer = info.Manufacturer,
+                        AndroidVersion = info.AndroidVersion,
+                        MiuiVersion = info.MiuiVersion,
+                        HyperOsVersion = info.HyperOsVersion
+                    };
+                    query = AdbQueryResult.Success(query.Devices.Select(d =>
+                        d.Serial == ready.Serial ? ready : d).ToList());
+                }
+                catch (OperationCanceledException) { throw; }
+                catch { /* i metadati sono facoltativi */ }
+            }
+
+            if (!query.Devices.Any(d => d.State == "device"))
+            {
+                Volatile.Write(ref _deviceInfo, AdbDeviceInfo.Empty);
+                _deviceInfoSerial = null;
+            }
+
             var status = DeviceStatusResolver.Resolve(query, phones);
+            if (status.IsReady)
+            {
+                _disconnectedCycles = 0;
+            }
+            else
+            {
+                _disconnectedCycles++;
+                if (_disconnectedCycles == 3)
+                {
+                    await SafeRestartAsync(ct).ConfigureAwait(false);
+                    query = await SafeListAsync(ct).ConfigureAwait(false);
+                    status = DeviceStatusResolver.Resolve(query, phones);
+                    _disconnectedCycles = 0;
+                }
+            }
             if (status != Current)
             {
                 Current = status;

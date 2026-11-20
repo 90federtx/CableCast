@@ -1,7 +1,16 @@
 namespace CableCast.Models;
 
 /// <summary>Un dispositivo come riportato da "adb devices -l".</summary>
-public sealed record AdbDevice(string Serial, string State, string? Model, string? Product, string? TransportId)
+public sealed record AdbDevice(
+    string Serial,
+    string State,
+    string? Model,
+    string? Product,
+    string? TransportId,
+    string? Manufacturer = null,
+    string? AndroidVersion = null,
+    string? MiuiVersion = null,
+    string? HyperOsVersion = null)
 {
     /// <summary>Wi-Fi (ip:porta) ed emulatori non sono "via cavo".</summary>
     public bool IsUsb => !Serial.Contains(':') && !Serial.StartsWith("emulator-", StringComparison.OrdinalIgnoreCase);
@@ -14,6 +23,16 @@ public sealed record AdbQueryResult(bool Ok, IReadOnlyList<AdbDevice> Devices, s
 {
     public static AdbQueryResult Success(IReadOnlyList<AdbDevice> devices) => new(true, devices, null);
     public static AdbQueryResult Failure(string error) => new(false, Array.Empty<AdbDevice>(), error);
+}
+
+public sealed record AdbDeviceInfo(
+    string? Manufacturer,
+    string? Model,
+    string? AndroidVersion,
+    string? MiuiVersion,
+    string? HyperOsVersion)
+{
+    public static readonly AdbDeviceInfo Empty = new(null, null, null, null, null);
 }
 
 public enum DeviceState

@@ -66,16 +66,20 @@ public class ProfileStoreTests : IDisposable
     {
         var store = Make(out var s);
         store.Load();
+        Directory.CreateDirectory(_dir);
         s.Gamepad = GamepadMode.Aoa;
+        store.Save();
         Assert.Contains("\"Aoa\"", File.ReadAllText(FilePath));
     }
 
     [Fact]
-    public void ChangingSettings_SavesAutomatically()
+    public async Task ChangingSettings_SavesAutomatically()
     {
         var store = Make(out var s);
         store.Load();
+        Directory.CreateDirectory(_dir);
         s.MaxFps = 24;
+        await Task.Delay(800);
         Assert.True(File.Exists(FilePath));
         Assert.Contains("24", File.ReadAllText(FilePath));
     }
@@ -158,6 +162,60 @@ public class ProfileStoreTests : IDisposable
         p.ApplyTo(s);
         Assert.Equal(GamepadMode.Uhid, s.Gamepad);
     }
+
+    [Fact]
+    public void Delete_ActiveCustomProfile_ReloadsDefaultSettings()
+    {
+        var store = Make(out var s);
+        store.Load();
+        var custom = store.SaveAs("Mio")!;
+        s.MaxSize = 1920;
+        s.MaxFps = 24;
+        s.Gamepad = GamepadMode.Aoa;
+        store.Apply(custom);
+        s.MaxSize = 1920;
+
+        Assert.True(store.Delete(custom));
+        Assert.Equal(store.Default.Name, store.ActiveName);
+        Assert.Equal(store.Default.MaxSize, s.MaxSize);
+        Assert.Equal(store.Default.MaxFps, s.MaxFps);
+        Assert.Equal(store.Default.Gamepad, s.Gamepad);
+    }
+
+    [Fact]
+    public async Task Settings_SaveIsDebouncedAndFinalSaveIsImmediate()
+    {
+        var store = Make(out var s);
+        store.Load();
+        s.MaxFps = 24;
+        await Task.Delay(100);
+        s.MaxFps = 30;
+        await Task.Delay(100);
+
+        Assert.False(File.Exists(FilePath));
+
+        store.Save();
+        Assert.True(File.Exists(FilePath));
+        Assert.Contains("\"MaxFps\": 30", File.ReadAllText(FilePath));
+    }
+
+    [Fact]
+    public void InvalidPersistedNumbers_AreClampedToSafeValues()
+    {
+        var p = new Profile
+        {
+            Name = "Test",
+            MaxSize = 99999,
+            MaxFps = -100,
+            VideoBitRateMbit = 999
+        };
+        var s = new MirrorSettings();
+        p.ApplyTo(s);
+
+        Assert.Equal(7680, s.MaxSize);
+        Assert.Equal(1, s.MaxFps);
+        Assert.Equal(64, s.VideoBitRateMbit);
+    }
 }
 
 public class DiagnosticsBuilderTests
@@ -167,7 +225,7 @@ public class DiagnosticsBuilderTests
     {
         var dev = new AdbDevice("SERIAL123456", "device", "Pixel", null, null);
         var status = new DeviceStatus(DeviceState.Ready, dev);
-        var log = string.Join("\n", Enumerable.Range(1, 500).Select(i => "riga" + i));
+        var log = string.Join("\n", Enumerable.Range(1, 499).Select(i => "riga" + i)) + "\nriga500 SERIAL123456";
         var text = DiagnosticsBuilder.Build(status, new MirrorSettings(), "Profilo", log, 100);
         Assert.DoesNotContain("SERIAL123456", text);
         Assert.Contains("Pixel", text);

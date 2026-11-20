@@ -34,7 +34,7 @@ public sealed class AppServices : IServiceProvider, IDisposable
         SettingsVm = new SettingsViewModel(Settings, Profiles, Log);
         ProfilesVm = new ProfilesViewModel(Profiles);
         LogVm = new LogViewModel(Log,
-            () => DiagnosticsBuilder.Build(Monitor.Current, Settings, Profiles.ActiveName, Log.AsText()));
+            () => DiagnosticsBuilder.Build(Monitor.Current, Settings, Profiles.ActiveName, Log.AsText(), deviceInfo: Monitor.DeviceInfo));
     }
 
     public void Start() => Monitor.Start();

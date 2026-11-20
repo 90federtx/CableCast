@@ -11,7 +11,7 @@ Mostra e controlla il tuo telefono Android sul PC tramite cavo USB. Pensato sopr
 
 ## Installazione
 
-1. Esegui `CableCast-Setup-1.1.1.exe` e segui la procedura guidata.
+1. Esegui `CableCast-Setup-1.1.2.exe` e segui la procedura guidata.
 2. Avvia CableCast dal menu Start.
 
 ## Preparare il telefono (una sola volta)
@@ -19,8 +19,6 @@ Mostra e controlla il tuo telefono Android sul PC tramite cavo USB. Pensato sopr
 1. **Impostazioni → Info sul telefono** e tocca 7 volte "Numero build": si attivano le *Opzioni sviluppatore*.
 2. **Impostazioni → Sistema → Opzioni sviluppatore** e attiva **Debug USB**.
 3. Collega il cavo. Sul telefono compare "Consentire il debug USB?": spunta "Consenti sempre" e conferma.
-
-Non trovi la voce? Guida per ogni marca (Xiaomi/Redmi, Samsung, Pixel, OnePlus, OPPO, Huawei…): [TUTORIAL-TELEFONI.md](TUTORIAL-TELEFONI.md).
 
 L'app ha una procedura guidata in italiano che ti accompagna in questi passaggi e mostra lo stato del dispositivo (non collegato, non autorizzato, pronto…).
 
@@ -64,6 +62,18 @@ Aggiornamenti: all'avvio, se sei online, l'app controlla se esiste una nuova rel
 | Il gioco non vede il controller | Cambia modalità da UHID ad AOA (o viceversa) e riavvia lo streaming. |
 | Immagine in ritardo | Usa il profilo "Bassa latenza", riduci risoluzione e FPS. |
 | Altro | Vai in **Log** e premi **Copia diagnostica**: il testo (senza numero seriale) è utile per chiedere aiuto. |
+
+### Xiaomi, Redmi e POCO
+
+Su Xiaomi, Redmi e POCO la compatibilità dipende anche dalle autorizzazioni di MIUI o HyperOS:
+
+- Attiva **Debug USB** e, nelle Opzioni sviluppatore, **Debug USB (Impostazioni sicurezza)**.
+- Sblocca il telefono durante la prima autorizzazione e tocca **Consenti sempre da questo computer**.
+- Imposta la connessione USB su **Trasferimento file**.
+- Se il telefono resta offline, scollega il cavo, cambia porta USB e ricollega: CableCast prova automaticamente a aggiornare e riavviare adb.
+- Se UHID non viene inizializzato, prova **AOA** solo con il cavo USB oppure disattiva il gamepad.
+
+Il rapporto diagnostico contiene produttore, modello, versione Android, versione MIUI/HyperOS e modalità controller, senza includere il numero seriale.
 
 ## Compilare dai sorgenti
 

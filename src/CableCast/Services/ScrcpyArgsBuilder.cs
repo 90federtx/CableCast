@@ -39,5 +39,11 @@ public static class ScrcpyArgsBuilder
 
     /// <summary>Restituisce la chiave di una stringa di errore se le impostazioni non sono utilizzabili con questo telefono, altrimenti null.</summary>
     public static string? Validate(MirrorSettings s, AdbDevice device) =>
-        s.Gamepad == GamepadMode.Aoa && !device.IsUsb ? "Err_AoaNeedsUsb" : null;
+        s.MaxSize is < 0 or > 7680 ||
+        s.MaxFps is < 0 or > 240 ||
+        s.VideoBitRateMbit is < 0 or > 64
+            ? "Err_InvalidSettings"
+            : s.Gamepad == GamepadMode.Aoa && !device.IsUsb
+                ? "Err_AoaNeedsUsb"
+                : null;
 }

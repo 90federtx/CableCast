@@ -12,7 +12,7 @@
     <AssemblyName>CableCast</AssemblyName>
     <ApplicationIcon>Resources\app.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
-    <Version>1.1.1</Version>
+    <Version>1.1.2</Version>
     <Company>CableCast</Company>
     <Product>CableCast</Product>
     <Description>Mirroring e controllo di un telefono Android via USB (basato su scrcpy)</Description>

@@ -31,8 +31,10 @@ public partial class MainWindow : FluentWindow
     {
         try
         {
-            if (_updateUrl is { } url && url.StartsWith(UpdateChecker.UrlPrefix, StringComparison.Ordinal))
-                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(url) { UseShellExecute = true });
+            if (_updateUrl is { } url &&
+                UpdateChecker.TryCreateAllowedReleaseUri(url, out var uri) &&
+                uri is not null)
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(uri.AbsoluteUri) { UseShellExecute = true });
         }
         catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
     }
