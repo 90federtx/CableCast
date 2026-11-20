@@ -6,7 +6,8 @@ namespace CableCast.Services;
 /// <summary>Testo da incollare quando si chiede aiuto: versioni, sistema, stato del telefono, impostazioni, log recente.</summary>
 public static class DiagnosticsBuilder
 {
-    public static string Build(DeviceStatus status, MirrorSettings s, string activeProfile, string logText, int maxLogLines = 100)
+    public static string Build(DeviceStatus status, MirrorSettings s, string activeProfile, string logText, int maxLogLines = 100,
+        AdbDeviceInfo? deviceInfo = null)
     {
         var sb = new StringBuilder();
         sb.AppendLine($"{AppInfo.Name} {AppInfo.Version}");
@@ -17,7 +18,19 @@ public static class DiagnosticsBuilder
         sb.AppendLine();
         sb.AppendLine($"Stato telefono: {status.State}");
         if (status.Device is { } d)
-            sb.AppendLine($"Dispositivo: {d.Model ?? "?"} (USB: {(d.IsUsb ? "sì" : "no")})"); // niente seriale: dato personale
+        {
+            sb.AppendLine($"Dispositivo: {d.Model ?? deviceInfo?.Model ?? "?"} (USB: {(d.IsUsb ? "sì" : "no")})");
+            sb.AppendLine($"Produttore: {deviceInfo?.Manufacturer ?? d.Manufacturer ?? "?"}");
+            sb.AppendLine($"Android: {deviceInfo?.AndroidVersion ?? d.AndroidVersion ?? "?"}");
+            sb.AppendLine($"MIUI: {deviceInfo?.MiuiVersion ?? d.MiuiVersion ?? "n/d"}");
+            sb.AppendLine($"HyperOS: {deviceInfo?.HyperOsVersion ?? d.HyperOsVersion ?? "n/d"}");
+            var compat = XiaomiCompatibility.Diagnostic(d with
+            {
+                Manufacturer = deviceInfo?.Manufacturer,
+                Model = d.Model ?? deviceInfo?.Model
+            }, status);
+            if (!string.IsNullOrEmpty(compat)) sb.AppendLine($"Compatibilità: {compat}");
+        }
         if (!string.IsNullOrWhiteSpace(status.Detail)) sb.AppendLine($"Dettaglio: {status.Detail}");
         sb.AppendLine();
         sb.AppendLine($"Profilo attivo: {activeProfile}");
@@ -29,7 +42,13 @@ public static class DiagnosticsBuilder
         sb.AppendLine();
         sb.AppendLine("--- Log recente ---");
         var lines = logText.Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
-        foreach (var l in lines.Skip(Math.Max(0, lines.Length - maxLogLines))) sb.AppendLine(l);
+        foreach (var l in lines.Skip(Math.Max(0, lines.Length - maxLogLines)))
+        {
+            var safe = l;
+            if (status.Device?.Serial is { Length: > 0 } serial)
+                safe = safe.Replace(serial, "[serial nascosto]", StringComparison.Ordinal);
+            sb.AppendLine(safe);
+        }
         return sb.ToString();
     }
 }

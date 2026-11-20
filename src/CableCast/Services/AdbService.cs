@@ -7,6 +7,7 @@ public interface IAdbService
 {
     Task<AdbQueryResult> ListDevicesAsync(CancellationToken ct = default);
     Task<bool> RestartServerAsync(CancellationToken ct = default);
+    Task<AdbDeviceInfo> GetDeviceInfoAsync(string serial, CancellationToken ct = default);
 }
 
 /// <summary>Usa l'adb incluso con scrcpy (stessa versione, nessun conflitto con altri adb).</summary>
@@ -43,6 +44,20 @@ public sealed class AdbService : IAdbService
         if (!kill.Started) return false;
         var start = await _runner.RunAsync(_adbPath, new[] { "start-server" }, ServerTimeout, ct).ConfigureAwait(false);
         return start.Success;
+    }
+
+    public async Task<AdbDeviceInfo> GetDeviceInfoAsync(string serial, CancellationToken ct = default)
+    {
+        if (!File.Exists(_adbPath) || string.IsNullOrWhiteSpace(serial))
+            return AdbDeviceInfo.Empty;
+
+        var r = await _runner.RunAsync(
+            _adbPath,
+            new[] { "-s", serial, "shell", "getprop" },
+            ShortTimeout,
+            ct).ConfigureAwait(false);
+        if (!r.Success) return AdbDeviceInfo.Empty;
+        return AdbOutputParser.ParseDeviceInfo(r.StdOut);
     }
 
     private static string? FirstNonEmpty(params string[] values) =>

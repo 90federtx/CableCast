@@ -24,12 +24,44 @@ public partial class App : Application
 
         DispatcherUnhandledException += (_, args) =>
         {
-            // Nessun crash: l'errore viene mostrato e l'app continua.
-            System.Diagnostics.Debug.WriteLine(args.Exception);
-            args.Handled = true;
+            var ex = args.Exception;
+            _services?.Log.Error($"Eccezione UI non gestita: {ex.GetType().Name}: {ex.Message}");
+            if (IsRecoverable(ex))
+            {
+                args.Handled = true;
+                MessageBox.Show(
+                    "Si è verificato un problema non critico. L'applicazione continuerà a funzionare, ma potrebbe essere necessario riprovare l'ultima operazione.",
+                    "CableCast - Errore recuperabile",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+            }
+            else
+            {
+                args.Handled = false;
+                MessageBox.Show(
+                    "Si è verificato un errore critico. CableCast verrà chiusa per evitare di lasciare lo stato dell'applicazione danneggiato.",
+                    "CableCast - Errore critico",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+                Shutdown();
+            }
         };
 
-        _services = new AppServices();
+        try
+        {
+            _services = new AppServices();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Errore critico all'avvio: {ex}");
+            MessageBox.Show(
+                "CableCast non può essere avviata correttamente perché lo stato dell'applicazione non è disponibile.",
+                "CableCast - Avvio interrotto",
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
+            Shutdown();
+            return;
+        }
         ApplyTheme(_services.Profiles.Theme);
         _services.Profiles.ThemeChanged += () => ApplyTheme(_services.Profiles.Theme);
         _window = new MainWindow(_services);
@@ -38,6 +70,10 @@ public partial class App : Application
         _services.Start();
         _ = CheckForUpdateAsync();
     }
+
+    private static bool IsRecoverable(Exception ex) =>
+        ex is System.IO.IOException or UnauthorizedAccessException or System.TimeoutException
+        or System.Net.Http.HttpRequestException;
 
     private async Task CheckForUpdateAsync()
     {

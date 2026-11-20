@@ -35,10 +35,24 @@ public static class UpdateChecker
             if (!root.TryGetProperty("tag_name", out var tagEl) || !root.TryGetProperty("html_url", out var urlEl)) return null;
             var tag = tagEl.GetString();
             var url = urlEl.GetString();
-            if (string.IsNullOrWhiteSpace(tag) || url is null || !url.StartsWith(UrlPrefix, StringComparison.Ordinal)) return null;
+            if (string.IsNullOrWhiteSpace(tag) || url is null) return null;
+            if (!TryCreateAllowedReleaseUri(url, out _)) return null;
             return new UpdateInfo(tag.TrimStart('v', 'V'), url);
         }
         catch { return null; }
+    }
+
+    public static bool TryCreateAllowedReleaseUri(string? text, out Uri? uri)
+    {
+        uri = null;
+        if (!Uri.TryCreate(text, UriKind.Absolute, out var parsed)) return false;
+        if (!parsed.Scheme.Equals(Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase)) return false;
+        if (!parsed.Host.Equals("github.com", StringComparison.OrdinalIgnoreCase)) return false;
+        var path = parsed.AbsolutePath.TrimEnd('/');
+        if (!path.Equals("/90federtx/CableCast", StringComparison.OrdinalIgnoreCase)
+            && !path.StartsWith("/90federtx/CableCast/", StringComparison.OrdinalIgnoreCase)) return false;
+        uri = parsed;
+        return true;
     }
 
     public static async Task<UpdateInfo?> CheckAsync(string currentVersion, LogService? log = null)

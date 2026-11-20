@@ -15,8 +15,22 @@ public sealed class ScrcpyRunner : IDisposable
     private readonly Queue<string> _stderrTail = new();
     private Process? _process;
     private bool _stopRequested;
+    private bool _disposed;
+    private readonly Func<ProcessStartInfo, Process> _processFactory;
 
-    public ScrcpyRunner(LogService log) => _log = log;
+    public ScrcpyRunner(LogService log) : this(log, psi => new Process
+    {
+        StartInfo = psi,
+        EnableRaisingEvents = true,
+    })
+    {
+    }
+
+    internal ScrcpyRunner(LogService log, Func<ProcessStartInfo, Process> processFactory)
+    {
+        _log = log;
+        _processFactory = processFactory;
+    }
 
     public MirrorState State { get; private set; } = MirrorState.Stopped;
     public event Action<MirrorState>? StateChanged;
@@ -33,6 +47,7 @@ public sealed class ScrcpyRunner : IDisposable
     {
         lock (_lock)
         {
+            if (_disposed) return;
             if (State != MirrorState.Stopped) return;
 
             var exe = Path.Combine(AppInfo.ScrcpyDir, "scrcpy.exe");
@@ -84,21 +99,30 @@ public sealed class ScrcpyRunner : IDisposable
             _stopRequested = false;
             SetState(MirrorState.Starting);
             _log.Info(Loc.Format("Log_Starting", device.DisplayName));
-            _log.Raw("scrcpy " + string.Join(' ', args));
+            var redactedArgs = args.Select(RedactSerialArgument);
+            _log.Raw("scrcpy " + string.Join(' ', redactedArgs));
 
             try
             {
-                var p = new Process { StartInfo = psi, EnableRaisingEvents = true };
+                var p = _processFactory(psi);
                 p.OutputDataReceived += (_, e) => OnLine(e.Data, false);
                 p.ErrorDataReceived += (_, e) => OnLine(e.Data, true);
                 p.Exited += (_, _) => OnExited(p);
+                _process = p;
                 p.Start();
                 p.BeginOutputReadLine();
                 p.BeginErrorReadLine();
-                _process = p;
             }
             catch (Exception ex)
             {
+                if (_process is { } failedProcess)
+                {
+                    try
+                    {
+                        failedProcess.Dispose();
+                    }
+                    catch { }
+                }
                 _process = null;
                 _log.Error(Loc.Format("Err_StartFailed", ex.Message));
                 SetState(MirrorState.Stopped);
@@ -110,6 +134,13 @@ public sealed class ScrcpyRunner : IDisposable
     {
         if (string.IsNullOrWhiteSpace(line)) return;
         _log.Raw(line);
+        if (isErr && line.Contains("UHID", StringComparison.OrdinalIgnoreCase)
+            && (line.Contains("fail", StringComparison.OrdinalIgnoreCase)
+                || line.Contains("error", StringComparison.OrdinalIgnoreCase)))
+        {
+            _log.Error(Loc.Get("Err_Uhid"));
+            _log.Info("UHID non inizializzato: prova la modalità AOA solo via USB oppure disattiva il gamepad.");
+        }
         lock (_lock)
         {
             if (isErr)
@@ -180,10 +211,25 @@ public sealed class ScrcpyRunner : IDisposable
         });
     }
 
+    internal static string RedactSerialArgument(string argument) =>
+        argument.StartsWith("--serial=", StringComparison.Ordinal)
+            ? "--serial=[nascosto]"
+            : argument;
+
     public void Dispose()
     {
         Process? p;
-        lock (_lock) { p = _process; _stopRequested = true; }
+        lock (_lock)
+        {
+            p = _process;
+            _stopRequested = true;
+            _disposed = true;
+            if (State != MirrorState.Stopped)
+            {
+                _process = null;
+                SetState(MirrorState.Stopped);
+            }
+        }
         try { if (p is { HasExited: false }) p.Kill(entireProcessTree: true); } catch { }
     }
 }

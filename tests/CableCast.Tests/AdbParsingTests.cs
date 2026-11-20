@@ -130,3 +130,114 @@ public class DeviceStatusResolverTests
         Assert.Equal(DeviceState.Ready, s.State);
     }
 }
+
+public class XiaomiCompatibilityTests
+{
+    [Theory]
+    [InlineData("Xiaomi", "2201116SG", true)]
+    [InlineData("Redmi", "Note 11 Pro", true)]
+    [InlineData("POCO", "M5", true)]
+    [InlineData("Samsung", "Galaxy S24", false)]
+    [InlineData(null, null, false)]
+    public void ManufacturerDetection(string? manufacturer, string? model, bool expected)
+        => Assert.Equal(expected, XiaomiCompatibility.IsXiaomiFamily(manufacturer, model));
+
+    [Fact]
+    public void UnauthorizedProducesSecurityInstructions()
+    {
+        var device = new AdbDevice("USB123", "unauthorized", "Redmi Note 11", "xaga", null, "Redmi");
+        var status = new DeviceStatus(DeviceState.Unauthorized, device);
+        var text = XiaomiCompatibility.Diagnostic(device, status);
+        Assert.Contains("Debug USB", text);
+        Assert.Contains("Consenti", text);
+    }
+
+    [Fact]
+    public void ParsesXiaomiPropertiesAndAndroidVersion()
+    {
+        var text = """
+[ro.product.manufacturer]: [Xiaomi]
+[ro.product.model]: [22101320G]
+[ro.build.version.release]: [14]
+[ro.miui.ui.version.name]: [V14]
+[ro.mi.os.version.name]: [1.0]
+""";
+        var info = AdbOutputParser.ParseDeviceInfo(text);
+        Assert.Equal("Xiaomi", info.Manufacturer);
+        Assert.Equal("22101320G", info.Model);
+        Assert.Equal("14", info.AndroidVersion);
+        Assert.Equal("V14", info.MiuiVersion);
+        Assert.Equal("1.0", info.HyperOsVersion);
+    }
+}
+
+public class DeviceMonitorReconnectTests
+{
+    private sealed class FailingAdb : IAdbService
+    {
+        public int RestartCount { get; private set; }
+        public Task<AdbQueryResult> ListDevicesAsync(CancellationToken ct = default) =>
+            Task.FromResult(AdbQueryResult.Failure("adb offline"));
+        public Task<bool> RestartServerAsync(CancellationToken ct = default)
+        {
+            RestartCount++;
+            return Task.FromResult(true);
+        }
+        public Task<AdbDeviceInfo> GetDeviceInfoAsync(string serial, CancellationToken ct = default) =>
+            Task.FromResult(AdbDeviceInfo.Empty);
+    }
+
+    private sealed class NoUsb : IUsbProbe
+    {
+        public Task<IReadOnlyList<string>> FindPhonesAsync() =>
+            Task.FromResult<IReadOnlyList<string>>(Array.Empty<string>());
+    }
+
+    [Fact]
+    public async Task RepeatedUnavailableStateAttemptsAutomaticRecovery()
+    {
+        var adb = new FailingAdb();
+        using var monitor = new DeviceMonitor(adb, new NoUsb(), TimeSpan.FromMilliseconds(1));
+        await monitor.RefreshAsync();
+        await monitor.RefreshAsync();
+        await monitor.RefreshAsync();
+        await monitor.RefreshAsync();
+        Assert.True(adb.RestartCount >= 1);
+    }
+
+    private sealed class MetadataAdb : IAdbService
+    {
+        public int MetadataCalls { get; private set; }
+
+        public Task<AdbQueryResult> ListDevicesAsync(CancellationToken ct = default) =>
+            Task.FromResult(AdbQueryResult.Success(new[]
+            {
+                new AdbDevice("USB123", "device", "Redmi Note 11", null, null)
+            }));
+
+        public Task<bool> RestartServerAsync(CancellationToken ct = default) =>
+            Task.FromResult(true);
+
+        public Task<AdbDeviceInfo> GetDeviceInfoAsync(string serial, CancellationToken ct = default)
+        {
+            MetadataCalls++;
+            var info = MetadataCalls == 1
+                ? new AdbDeviceInfo("Xiaomi", "Redmi Note 11", null, null, null)
+                : new AdbDeviceInfo("Xiaomi", "Redmi Note 11", "14", "V14", null);
+            return Task.FromResult(info);
+        }
+    }
+
+    [Fact]
+    public async Task IncompleteMetadataIsNotCachedAndIsRetried()
+    {
+        var adb = new MetadataAdb();
+        using var monitor = new DeviceMonitor(adb, new NoUsb(), TimeSpan.FromMilliseconds(1));
+
+        await monitor.RefreshAsync();
+        await monitor.RefreshAsync();
+
+        Assert.Equal(2, adb.MetadataCalls);
+        Assert.Equal("14", monitor.DeviceInfo.AndroidVersion);
+    }
+}

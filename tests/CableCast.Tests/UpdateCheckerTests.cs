@@ -30,5 +30,19 @@ public class UpdateCheckerTests
     [InlineData("[]")]
     [InlineData("{\"tag_name\":\"v1.2.3\"}")]
     [InlineData("{\"tag_name\":\"v1.2.3\",\"html_url\":\"https://evil.example/x\"}")]
+    [InlineData("{\"tag_name\":\"v1.2.3\",\"html_url\":\"https://github.com/evil/CableCast/releases/tag/v1.2.3\"}")]
+    [InlineData("{\"tag_name\":\"v1.2.3\",\"html_url\":\"http://github.com/90federtx/CableCast/releases/tag/v1.2.3\"}")]
+    [InlineData("{\"tag_name\":\"v1.2.3\",\"html_url\":\"https://github.com.evil.example/90federtx/CableCast/releases/tag/v1.2.3\"}")]
     public void Parse_RejectsInvalid(string json) => Assert.Null(UpdateChecker.Parse(json));
+
+    [Theory]
+    [InlineData("https://github.com/90federtx/CableCast/releases/tag/v1.2.3", true)]
+    [InlineData("https://github.com/90federtx/CableCast", true)]
+    [InlineData("https://github.com/evil/CableCast/releases/tag/v1.2.3", false)]
+    [InlineData("http://github.com/90federtx/CableCast/releases/tag/v1.2.3", false)]
+    [InlineData("not a url", false)]
+    public void StrictRepositoryValidation(string text, bool expected)
+    {
+        Assert.Equal(expected, UpdateChecker.TryCreateAllowedReleaseUri(text, out _));
+    }
 }

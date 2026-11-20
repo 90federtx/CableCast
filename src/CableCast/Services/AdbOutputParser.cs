@@ -61,4 +61,33 @@ public static class AdbOutputParser
         }
         return null;
     }
+
+    public static AdbDeviceInfo ParseDeviceInfo(string? output)
+    {
+        if (string.IsNullOrWhiteSpace(output)) return AdbDeviceInfo.Empty;
+        var props = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var raw in output.Split('\n'))
+        {
+            var line = raw.Trim();
+            var open = line.IndexOf('[');
+            var closeKey = line.IndexOf("]: [", open + 1, StringComparison.Ordinal);
+            if (open < 0 || closeKey < 0) continue;
+            var key = line.Substring(open + 1, closeKey - open - 1);
+            var valueStart = closeKey + 4;
+            var valueEnd = line.LastIndexOf(']');
+            if (valueStart < valueEnd)
+                props[key] = line.Substring(valueStart, valueEnd - valueStart).Trim();
+        }
+        props.TryGetValue("ro.product.manufacturer", out var manufacturer);
+        props.TryGetValue("ro.product.model", out var model);
+        props.TryGetValue("ro.build.version.release", out var android);
+        props.TryGetValue("ro.miui.ui.version.name", out var miui);
+        props.TryGetValue("ro.mi.os.version.name", out var hyperOs);
+        return new AdbDeviceInfo(
+            string.IsNullOrWhiteSpace(manufacturer) ? null : manufacturer,
+            string.IsNullOrWhiteSpace(model) ? null : model,
+            string.IsNullOrWhiteSpace(android) ? null : android,
+            string.IsNullOrWhiteSpace(miui) ? null : miui,
+            string.IsNullOrWhiteSpace(hyperOs) ? null : hyperOs);
+    }
 }

@@ -24,9 +24,9 @@ public sealed class Profile
 
     public void ApplyTo(MirrorSettings s)
     {
-        s.MaxSize = MaxSize;
-        s.MaxFps = MaxFps;
-        s.VideoBitRateMbit = VideoBitRateMbit;
+        s.MaxSize = MaxSize == 0 ? 0 : Math.Clamp(MaxSize, 320, 7680);
+        s.MaxFps = Math.Clamp(MaxFps, 1, 240);
+        s.VideoBitRateMbit = Math.Clamp(VideoBitRateMbit, 1, 64);
         s.AudioEnabled = AudioEnabled;
         s.TurnScreenOff = TurnScreenOff;
         s.StayAwake = StayAwake;

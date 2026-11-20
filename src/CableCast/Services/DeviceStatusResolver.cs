@@ -15,7 +15,8 @@ public static class DeviceStatusResolver
         var ready = ordered.FirstOrDefault(d => d.State == "device");
         if (ready is not null) return new DeviceStatus(DeviceState.Ready, ready);
 
-        var unauthorized = ordered.FirstOrDefault(d => d.State == "unauthorized");
+        var unauthorized = ordered.FirstOrDefault(d =>
+            d.State == "unauthorized" || d.State.Contains("permission", StringComparison.OrdinalIgnoreCase));
         if (unauthorized is not null) return new DeviceStatus(DeviceState.Unauthorized, unauthorized);
 
         var other = ordered.FirstOrDefault();

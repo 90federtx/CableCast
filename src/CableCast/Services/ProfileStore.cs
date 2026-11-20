@@ -37,6 +37,9 @@ public sealed class ProfileStore : IDisposable
     private readonly MirrorSettings _settings;
     private readonly LogService? _log;
     private readonly object _lock = new();
+    private readonly TimeSpan _saveDelay;
+    private System.Threading.Timer? _saveTimer;
+    private bool _disposed;
     private bool _applying;
 
     public ObservableCollection<Profile> Profiles { get; } = new();
@@ -66,11 +69,12 @@ public sealed class ProfileStore : IDisposable
         Save();
     }
 
-    public ProfileStore(string path, MirrorSettings settings, LogService? log = null)
+    public ProfileStore(string path, MirrorSettings settings, LogService? log = null, TimeSpan? saveDelay = null)
     {
         _path = path;
         _settings = settings;
         _log = log;
+        _saveDelay = saveDelay ?? TimeSpan.FromMilliseconds(600);
         foreach (var p in BuiltIns()) Profiles.Add(p);
         _settings.PropertyChanged += OnSettingsChanged;
     }
@@ -162,7 +166,14 @@ public sealed class ProfileStore : IDisposable
     public bool Delete(Profile profile)
     {
         if (profile.BuiltIn || !Profiles.Remove(profile)) return false;
-        if (ActiveName == profile.Name) { ActiveName = Default.Name; ActiveChanged?.Invoke(); }
+        if (ActiveName == profile.Name)
+        {
+            ActiveName = Default.Name;
+            _applying = true;
+            try { Default.ApplyTo(_settings); }
+            finally { _applying = false; }
+            ActiveChanged?.Invoke();
+        }
         Save();
         return true;
     }
@@ -170,11 +181,39 @@ public sealed class ProfileStore : IDisposable
     private void OnSettingsChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (_applying) return;
-        Save();
+        ScheduleSave();
     }
 
     /// <summary>Scrittura atomica (file temporaneo + sostituzione). Non lancia mai eccezioni.</summary>
     public void Save()
+    {
+        lock (_lock)
+        {
+            _saveTimer?.Dispose();
+            _saveTimer = null;
+        }
+        ScheduleSave(immediate: true);
+    }
+
+    private void ScheduleSave(bool immediate = false)
+    {
+        lock (_lock)
+        {
+            if (_disposed) return;
+            _saveTimer?.Dispose();
+            if (immediate)
+            {
+                _saveTimer = null;
+                SaveNow();
+            }
+            else
+            {
+                _saveTimer = new System.Threading.Timer(_ => SaveNow(), null, _saveDelay, Timeout.InfiniteTimeSpan);
+            }
+        }
+    }
+
+    private void SaveNow()
     {
         lock (_lock)
         {
@@ -203,7 +242,14 @@ public sealed class ProfileStore : IDisposable
 
     public void Dispose()
     {
+        lock (_lock)
+        {
+            if (_disposed) return;
+            _disposed = true;
+            _saveTimer?.Dispose();
+            _saveTimer = null;
+        }
         _settings.PropertyChanged -= OnSettingsChanged;
-        Save();
+        SaveNow();
     }
 }
