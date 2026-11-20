@@ -152,6 +152,12 @@
   <data name="Update_Dismiss" xml:space="preserve"><value>Chiudi</value></data>
   <data name="Log_UpdateAvailable" xml:space="preserve"><value>Aggiornamento disponibile: {0}.</value></data>
   <data name="Log_UpdateCheckFailed" xml:space="preserve"><value>Controllo aggiornamenti non riuscito (probabilmente sei offline): {0}</value></data>
+  <data name="Update_Downloading" xml:space="preserve"><value>Download dell'aggiornamento in corso… {0}%</value></data>
+  <data name="Update_Ready" xml:space="preserve"><value>Aggiornamento scaricato. Premi «Installa» per chiudere CableCast e avviare l'installazione.</value></data>
+  <data name="Update_Install" xml:space="preserve"><value>Installa</value></data>
+  <data name="Update_Failed" xml:space="preserve"><value>Download non riuscito. Controlla la connessione e riprova.</value></data>
+  <data name="Update_Cancel" xml:space="preserve"><value>Annulla</value></data>
+  <data name="Log_UpdateDownloadFailed" xml:space="preserve"><value>Download dell'aggiornamento non riuscito: {0}</value></data>
   <data name="Nav_Phones" xml:space="preserve"><value>Guida telefoni</value></data>
   <data name="Phones_Title" xml:space="preserve"><value>Come attivare il Debug USB</value></data>
   <data name="Phones_Intro" xml:space="preserve"><value>La voce è nascosta e cambia nome da marca a marca. Scegli il tuo telefono qui sotto e segui i passaggi.</value></data>

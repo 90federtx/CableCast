@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.1.3
+
+### Novità
+
+- Il banner di aggiornamento scarica l'installer direttamente nell'app, con barra di avanzamento e pulsante Annulla; l'installazione parte solo quando premi "Installa".
+- Dimensione e SHA256 dell'installer vengono verificati quando GitHub li fornisce.
+- Se il download non è possibile, si apre la pagina della release come prima.
+
 ## 1.1.2
 
 ### Corretto

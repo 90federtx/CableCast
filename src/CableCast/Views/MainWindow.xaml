@@ -21,9 +21,12 @@
                 Background="{DynamicResource ControlFillColorSecondaryBrush}">
             <DockPanel>
                 <ui:Button DockPanel.Dock="Right" Content="{loc:L Update_Dismiss}" Click="OnDismissUpdate" Margin="8,0,0,0" />
-                <ui:Button DockPanel.Dock="Right" Content="{loc:L Update_Download}" Appearance="Primary" Click="OnDownloadUpdate" />
-                <TextBlock x:Name="UpdateText" TextWrapping="Wrap" VerticalAlignment="Center"
-                           Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+                <ui:Button x:Name="UpdateAction" DockPanel.Dock="Right" Content="{loc:L Update_Download}" Appearance="Primary" Click="OnDownloadUpdate" />
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock x:Name="UpdateText" TextWrapping="Wrap"
+                               Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+                    <ProgressBar x:Name="UpdateProgress" Visibility="Collapsed" Height="4" Maximum="1" Margin="0,6,0,0" />
+                </StackPanel>
             </DockPanel>
         </Border>
 

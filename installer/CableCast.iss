@@ -1,6 +1,6 @@
 ; Installer CableCast. Si compila con build.ps1 (passa AppVersion e PublishDir).
 #ifndef AppVersion
-  #define AppVersion "1.1.2"
+  #define AppVersion "1.1.3"
 #endif
 #ifndef PublishDir
   #define PublishDir "..\artifacts\publish"

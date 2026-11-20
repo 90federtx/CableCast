@@ -1,9 +1,11 @@
+using System.IO;
 using System.Net.Http;
 using System.Text.Json;
 
 namespace CableCast.Services;
 
-public sealed record UpdateInfo(string Version, string Url);
+public sealed record UpdateInfo(string Version, string Url,
+    string? AssetUrl = null, string? AssetName = null, long AssetSize = 0, string? AssetSha256 = null);
 
 /// <summary>Controlla su GitHub se esiste una release più recente. Mai eccezioni verso l'esterno.</summary>
 public static class UpdateChecker
@@ -37,10 +39,41 @@ public static class UpdateChecker
             var url = urlEl.GetString();
             if (string.IsNullOrWhiteSpace(tag) || url is null) return null;
             if (!TryCreateAllowedReleaseUri(url, out _)) return null;
-            return new UpdateInfo(tag.TrimStart('v', 'V'), url);
+            var (aUrl, aName, aSize, aSha) = FindInstallerAsset(root);
+            return new UpdateInfo(tag.TrimStart('v', 'V'), url, aUrl, aName, aSize, aSha);
         }
         catch { return null; }
     }
+
+    private static (string? Url, string? Name, long Size, string? Sha) FindInstallerAsset(JsonElement root)
+    {
+        if (!root.TryGetProperty("assets", out var assets) || assets.ValueKind != JsonValueKind.Array) return default;
+        foreach (var a in assets.EnumerateArray())
+        {
+            if (a.ValueKind != JsonValueKind.Object) continue;
+            var name = a.TryGetProperty("name", out var n) && n.ValueKind == JsonValueKind.String ? n.GetString() : null;
+            var url = a.TryGetProperty("browser_download_url", out var u) && u.ValueKind == JsonValueKind.String ? u.GetString() : null;
+            if (name is null || url is null) continue;
+            if (!name.Contains("Setup", StringComparison.OrdinalIgnoreCase) ||
+                !name.EndsWith(".exe", StringComparison.OrdinalIgnoreCase)) continue;
+            if (!IsAllowedAssetUri(url)) continue;
+            if (name.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0) continue;
+            long size = a.TryGetProperty("size", out var sz) && sz.ValueKind == JsonValueKind.Number && sz.TryGetInt64(out var l) ? l : 0;
+            string? sha = null;
+            if (a.TryGetProperty("digest", out var d) && d.ValueKind == JsonValueKind.String)
+            {
+                var t = d.GetString();
+                if (t is not null && t.StartsWith("sha256:", StringComparison.OrdinalIgnoreCase)) sha = t[7..];
+            }
+            return (url, name, size, sha);
+        }
+        return default;
+    }
+
+    /// <summary>Solo allegati di release del repository ufficiale, via https.</summary>
+    public static bool IsAllowedAssetUri(string? text)
+        => TryCreateAllowedReleaseUri(text, out var uri) && uri is not null &&
+           uri.AbsolutePath.StartsWith("/90federtx/CableCast/releases/download/", StringComparison.OrdinalIgnoreCase);
 
     public static bool TryCreateAllowedReleaseUri(string? text, out Uri? uri)
     {
