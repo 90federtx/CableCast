@@ -98,6 +98,7 @@ public partial class MainWindow : FluentWindow
     {
         try
         {
+            AdbService.KillServerBestEffort(_log);
             System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(_installerPath!) { UseShellExecute = true });
             System.Windows.Application.Current.Shutdown();
         }

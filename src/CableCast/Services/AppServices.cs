@@ -57,5 +57,6 @@ public sealed class AppServices : IServiceProvider, IDisposable
         Monitor.Dispose();
         Runner.Dispose();
         Profiles.Dispose();
+        AdbService.KillServerBestEffort(Log);
     }
 }

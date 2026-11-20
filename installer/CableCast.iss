@@ -1,6 +1,6 @@
 ; Installer CableCast. Si compila con build.ps1 (passa AppVersion e PublishDir).
 #ifndef AppVersion
-  #define AppVersion "1.1.3"
+  #define AppVersion "1.1.4"
 #endif
 #ifndef PublishDir
   #define PublishDir "..\artifacts\publish"
@@ -47,6 +47,29 @@ Name: "{autodesktop}\{#AppName}"; Filename: "{app}\{#AppExe}"; Tasks: desktopico
 
 [Run]
 Filename: "{app}\{#AppExe}"; Description: "{cm:LaunchProgram,{#AppName}}"; Flags: nowait postinstall skipifsilent
+
+[Code]
+procedure StopAdb;
+var
+  Code: Integer;
+  Adb: String;
+begin
+  Adb := ExpandConstant('{app}\tools\scrcpy\adb.exe');
+  if FileExists(Adb) then
+    Exec(Adb, 'kill-server', '', SW_HIDE, ewWaitUntilTerminated, Code);
+  Exec(ExpandConstant('{sys}\taskkill.exe'), '/F /IM adb.exe', '', SW_HIDE, ewWaitUntilTerminated, Code);
+end;
+
+function PrepareToInstall(var NeedsRestart: Boolean): String;
+begin
+  StopAdb;
+  Result := '';
+end;
+
+procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
+begin
+  if CurUninstallStep = usUninstall then StopAdb;
+end;
 
 [UninstallRun]
 Filename: "{app}\tools\scrcpy\adb.exe"; Parameters: "kill-server"; Flags: runhidden skipifdoesntexist; RunOnceId: "KillAdb"

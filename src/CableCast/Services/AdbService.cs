@@ -25,6 +25,29 @@ public sealed class AdbService : IAdbService
         _adbPath = adbPath ?? Path.Combine(AppInfo.ScrcpyDir, "adb.exe");
     }
 
+    /// <summary>Ferma il server adb avviato dall'app (altrimenti resta vivo e blocca adb.exe). Mai eccezioni.</summary>
+    public static void KillServerBestEffort(LogService? log = null)
+    {
+        try
+        {
+            var path = Path.Combine(AppInfo.ScrcpyDir, "adb.exe");
+            if (!File.Exists(path)) return;
+            var psi = new System.Diagnostics.ProcessStartInfo(path)
+            {
+                UseShellExecute = false, CreateNoWindow = true,
+                RedirectStandardOutput = true, RedirectStandardError = true
+            };
+            psi.ArgumentList.Add("kill-server");
+            using var p = System.Diagnostics.Process.Start(psi);
+            if (p is null) return;
+            if (!p.WaitForExit(3000)) { try { p.Kill(true); } catch { } }
+        }
+        catch (Exception ex)
+        {
+            try { log?.Info(ex.Message); } catch { }
+        }
+    }
+
     public async Task<AdbQueryResult> ListDevicesAsync(CancellationToken ct = default)
     {
         if (!File.Exists(_adbPath))
