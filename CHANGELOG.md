@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.1.4
+
+### Corretto
+
+- Alla chiusura l'app ferma il server adb, che prima restava attivo e bloccava `adb.exe` impedendo aggiornamento e disinstallazione.
+- L'installer e il pulsante "Installa" dell'aggiornamento fermano adb prima di sostituire i file.
+- Se CableCast è nascosta nell'area di notifica, riaprirla dall'icona la riporta in primo piano invece di non fare nulla.
+
 ## 1.1.3
 
 ### Novità

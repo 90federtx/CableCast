@@ -44,7 +44,7 @@ internal sealed class TrayIcon : IDisposable
         }
     }
 
-    private void Restore()
+    public void Restore()
     {
         _window.Show();
         if (_window.WindowState == WindowState.Minimized) _window.WindowState = WindowState.Normal;

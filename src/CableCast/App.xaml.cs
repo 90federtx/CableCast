@@ -7,6 +7,7 @@ namespace CableCast;
 public partial class App : Application
 {
     private Mutex? _singleInstance;
+    private EventWaitHandle? _showEvent;
     private TrayIcon? _tray;
     private MainWindow? _window;
     private AppServices? _services;
@@ -16,11 +17,29 @@ public partial class App : Application
         base.OnStartup(e);
 
         _singleInstance = new Mutex(true, $"Local\\{AppInfo.Name}.SingleInstance", out var createdNew);
+        var showName = $"Local\\{AppInfo.Name}.Show";
         if (!createdNew)
         {
+            // Già aperta (magari nascosta nell'area di notifica): la riporto in primo piano.
+            try { using var h = EventWaitHandle.OpenExisting(showName); h.Set(); } catch { }
             Shutdown();
             return;
         }
+        try
+        {
+            _showEvent = new EventWaitHandle(false, EventResetMode.AutoReset, showName);
+            var t = new Thread(() =>
+            {
+                try
+                {
+                    while (_showEvent.WaitOne())
+                        Dispatcher.BeginInvoke(() => _tray?.Restore());
+                }
+                catch { }
+            }) { IsBackground = true };
+            t.Start();
+        }
+        catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
 
         DispatcherUnhandledException += (_, args) =>
         {
@@ -105,6 +124,7 @@ public partial class App : Application
         _services?.Dispose();
         _tray?.Dispose();
         _singleInstance?.Dispose();
+        _showEvent?.Dispose();
         base.OnExit(e);
     }
 }
