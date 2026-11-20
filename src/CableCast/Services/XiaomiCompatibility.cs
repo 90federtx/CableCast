@@ -19,13 +19,13 @@ public static class XiaomiCompatibility
             return "";
 
         if (status.State == DeviceState.Unauthorized)
-            return "Dispositivo Xiaomi rilevato. Sul telefono tocca Consenti al debug USB, attiva «Consenti sempre da questo computer» e verifica «Debug USB (Impostazioni sicurezza)» nelle Opzioni sviluppatore.";
+            return Loc.Get("Xiaomi_Unauthorized");
         if (status.State == DeviceState.UsbDebuggingOff)
-            return "Dispositivo Xiaomi rilevato. Attiva Debug USB e Debug USB (Impostazioni sicurezza), quindi imposta il cavo USB su Trasferimento file.";
+            return Loc.Get("Xiaomi_UsbDebuggingOff");
         if (status.State == DeviceState.Offline)
-            return "Dispositivo Xiaomi rilevato ma offline. Sblocca lo schermo, usa una porta USB diretta e disattiva temporaneamente l'uso esclusivo di altri strumenti adb.";
+            return Loc.Get("Xiaomi_Offline");
         if (status.State == DeviceState.NoDevice)
-            return "Dispositivo Xiaomi rilevato da Windows ma non da adb. Verifica Trasferimento file, Debug USB e le autorizzazioni di sicurezza MIUI/HyperOS.";
-        return "Dispositivo Xiaomi rilevato. Sono attivi i controlli specifici per MIUI/HyperOS: mantenere il telefono sbloccato durante la prima autorizzazione.";
+            return Loc.Get("Xiaomi_NoDevice");
+        return Loc.Get("Xiaomi_Default");
     }
 }
