@@ -43,6 +43,16 @@ Risoluzione massima, FPS massimi, bitrate, audio, schermo spento, schermo sempre
 - **UHID** (consigliato): il controller del PC appare al telefono come controller Bluetooth/HID. Funziona con cavo normale e non richiede permessi speciali. Scelta giusta nella maggior parte dei casi.
 - **AOA**: il controller viene inoltrato tramite il protocollo accessori USB di Android. Usalo solo se UHID non viene riconosciuto dal gioco o dal telefono. Con AOA il debug USB e alcune funzioni del cavo possono comportarsi in modo diverso.
 
+### Controller "come PS5" e mappa tasti
+
+In Impostazioni puoi attivare «Usa il controller con il layout PS5» (PS4, Switch Pro, Xbox e altri) e cambiare l'assegnazione di ogni tasto. La mappatura avviene sul PC: il telefono non vede un vero DualSense, perché scrcpy presenta un proprio gamepad generico. Funzione non verificata con controller reali.
+
+### Aspetto
+
+Impostazioni → Aspetto: tema Giorno o Notte, applicato subito e ricordato.
+
+Aggiornamenti: all'avvio, se sei online, l'app controlla se esiste una nuova release su GitHub e mostra un banner con il pulsante "Scarica". Si può disattivare in Impostazioni.
+
 ## Problemi comuni
 
 | Sintomo | Cosa fare |

@@ -16,8 +16,10 @@ public sealed class Profile
     public bool Fullscreen { get; set; }
     public string WindowTitle { get; set; } = "";
     public GamepadMode Gamepad { get; set; } = GamepadMode.Uhid;
+    public bool ControllerAsPs5 { get; set; }
+    public string ButtonMap { get; set; } = "";
 
-    /// <summary>I profili predefiniti non si cancellano e non si salvano nel file.</summary>
+    ///<summary>I profili predefiniti non si cancellano e non si salvano nel file.</summary>
     [JsonIgnore] public bool BuiltIn { get; set; }
 
     public void ApplyTo(MirrorSettings s)
@@ -32,6 +34,8 @@ public sealed class Profile
         s.Fullscreen = Fullscreen;
         s.WindowTitle = WindowTitle ?? "";
         s.Gamepad = Enum.IsDefined(Gamepad) ? Gamepad : GamepadMode.Uhid;
+        s.ControllerAsPs5 = ControllerAsPs5;
+        s.ButtonMap = ButtonMap ?? "";
     }
 
     public static Profile From(string name, MirrorSettings s) => new()
@@ -47,5 +51,7 @@ public sealed class Profile
         Fullscreen = s.Fullscreen,
         WindowTitle = s.WindowTitle,
         Gamepad = s.Gamepad,
+        ControllerAsPs5 = s.ControllerAsPs5,
+        ButtonMap = s.ButtonMap,
     };
 }

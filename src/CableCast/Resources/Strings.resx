@@ -115,4 +115,40 @@
   <data name="Log_SettingsSaveFailed" xml:space="preserve"><value>Impossibile salvare le impostazioni: {0}</value></data>
   <data name="Log_DiagnosticsCopied" xml:space="preserve"><value>Diagnostica copiata negli appunti.</value></data>
   <data name="Log_CopyDiagnostics" xml:space="preserve"><value>Copia diagnostica</value></data>
+  <data name="Theme_Light" xml:space="preserve"><value>Giorno</value></data>
+  <data name="Theme_Dark" xml:space="preserve"><value>Notte</value></data>
+  <data name="Settings_ThemeTitle" xml:space="preserve"><value>Aspetto</value></data>
+  <data name="Settings_Theme" xml:space="preserve"><value>Tema (Giorno / Notte)</value></data>
+  <data name="Settings_ControllerTitle" xml:space="preserve"><value>Controller come PS5</value></data>
+  <data name="Settings_ControllerAsPs5" xml:space="preserve"><value>Tratta qualsiasi controller come un controller PS5</value></data>
+  <data name="Settings_ControllerNote" xml:space="preserve"><value>Funziona sul PC: i tasti del controller (PS4, Switch Pro, Xbox, ecc.) vengono normalizzati con il layout PS5 prima di essere inviati al telefono. Il telefono non vedrà un vero DualSense: scrcpy usa una propria identità gamepad generica.</value></data>
+  <data name="Settings_ButtonMapTitle" xml:space="preserve"><value>Mappa dei tasti</value></data>
+  <data name="Settings_ButtonMapHelp" xml:space="preserve"><value>Per ogni tasto PS5 scegli quale pulsante fisico del controller lo attiva.</value></data>
+  <data name="Settings_DetectControllers" xml:space="preserve"><value>Rileva controller</value></data>
+  <data name="Settings_ResetMap" xml:space="preserve"><value>Ripristina</value></data>
+  <data name="Controller_None" xml:space="preserve"><value>Nessun controller rilevato.</value></data>
+  <data name="Controller_Found" xml:space="preserve"><value>Controller rilevati ({0}): {1}</value></data>
+  <data name="Log_ControllerDetectFailed" xml:space="preserve"><value>Impossibile rilevare i controller: {0}</value></data>
+  <data name="Log_ControllerPs5" xml:space="preserve"><value>Controller come PS5 attivo ({0} controller).</value></data>
+  <data name="Ps5_a" xml:space="preserve"><value>Croce</value></data>
+  <data name="Ps5_b" xml:space="preserve"><value>Cerchio</value></data>
+  <data name="Ps5_x" xml:space="preserve"><value>Quadrato</value></data>
+  <data name="Ps5_y" xml:space="preserve"><value>Triangolo</value></data>
+  <data name="Ps5_back" xml:space="preserve"><value>Create</value></data>
+  <data name="Ps5_guide" xml:space="preserve"><value>PS</value></data>
+  <data name="Ps5_start" xml:space="preserve"><value>Options</value></data>
+  <data name="Ps5_leftstick" xml:space="preserve"><value>L3</value></data>
+  <data name="Ps5_rightstick" xml:space="preserve"><value>R3</value></data>
+  <data name="Ps5_leftshoulder" xml:space="preserve"><value>L1</value></data>
+  <data name="Ps5_rightshoulder" xml:space="preserve"><value>R1</value></data>
+  <data name="Ps5_dpup" xml:space="preserve"><value>Croce direzionale ↑</value></data>
+  <data name="Ps5_dpdown" xml:space="preserve"><value>Croce direzionale ↓</value></data>
+  <data name="Ps5_dpleft" xml:space="preserve"><value>Croce direzionale ←</value></data>
+  <data name="Ps5_dpright" xml:space="preserve"><value>Croce direzionale →</value></data>
+  <data name="Settings_CheckUpdates" xml:space="preserve"><value>Cerca aggiornamenti all'avvio (serve internet)</value></data>
+  <data name="Update_Available" xml:space="preserve"><value>È disponibile una nuova versione di CableCast: {0} (tu hai la {1}).</value></data>
+  <data name="Update_Download" xml:space="preserve"><value>Scarica</value></data>
+  <data name="Update_Dismiss" xml:space="preserve"><value>Chiudi</value></data>
+  <data name="Log_UpdateAvailable" xml:space="preserve"><value>Aggiornamento disponibile: {0}.</value></data>
+  <data name="Log_UpdateCheckFailed" xml:space="preserve"><value>Controllo aggiornamenti non riuscito (probabilmente sei offline): {0}</value></data>
 </root>

@@ -17,4 +17,6 @@ public partial class MirrorSettings : ObservableObject
     [ObservableProperty] private bool _fullscreen;
     [ObservableProperty] private string _windowTitle = "";
     [ObservableProperty] private GamepadMode _gamepad = GamepadMode.Uhid;
+    [ObservableProperty] private bool _controllerAsPs5;
+    [ObservableProperty] private string _buttonMap = "";
 }

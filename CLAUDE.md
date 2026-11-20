@@ -40,4 +40,4 @@ La diagnostica non deve contenere il numero seriale del dispositivo (c'è un tes
 
 ## Non verificato senza telefono reale
 
-Streaming vero, gamepad UHID/AOA, PS Remote Play, scollegamento durante l'uso, installazione/disinstallazione su macchina pulita.
+Streaming vero, gamepad UHID/AOA, PS Remote Play, scollegamento durante l'uso, installazione/disinstallazione su macchina pulita. Inoltre: mappatura controller "come PS5" (variabili SDL_GAMECONTROLLERCONFIG, assunzione b0..b14 per i pulsanti HIDAPI) e cambio tema dal vivo. Anche il controllo aggiornamenti all'avvio (banner): non visibile finché non esiste una release più recente su GitHub; offline resta silenzioso (solo una riga nel log).

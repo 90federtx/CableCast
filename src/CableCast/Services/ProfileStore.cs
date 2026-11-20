@@ -11,6 +11,8 @@ namespace CableCast.Services;
 public sealed class SettingsFile
 {
     public int Version { get; set; } = 1;
+    public string Theme { get; set; } = "Dark";
+    public bool CheckUpdates { get; set; } = true;
     public string ActiveProfile { get; set; } = "";
     public Profile? Current { get; set; }
     public List<Profile> CustomProfiles { get; set; } = new();
@@ -40,6 +42,29 @@ public sealed class ProfileStore : IDisposable
     public ObservableCollection<Profile> Profiles { get; } = new();
     public string ActiveName { get; private set; } = "";
     public event Action? ActiveChanged;
+    public event Action? ThemeChanged;
+
+    /// <summary>Tema dell'app ("Dark" o "Light"), salvato in settings.json.</summary>
+    public string Theme { get; private set; } = "Dark";
+
+    public void SetTheme(string theme)
+    {
+        theme = theme == "Light" ? "Light" : "Dark";
+        if (theme == Theme) return;
+        Theme = theme;
+        ThemeChanged?.Invoke();
+        Save();
+    }
+
+    /// <summary>Se true, all'avvio l'app cerca aggiornamenti su GitHub.</summary>
+    public bool CheckUpdates { get; private set; } = true;
+
+    public void SetCheckUpdates(bool value)
+    {
+        if (value == CheckUpdates) return;
+        CheckUpdates = value;
+        Save();
+    }
 
     public ProfileStore(string path, MirrorSettings settings, LogService? log = null)
     {
@@ -86,6 +111,9 @@ public sealed class ProfileStore : IDisposable
         {
             _log?.Warn(Loc.Format("Log_SettingsCorrupt", ex.Message));
         }
+
+        Theme = file?.Theme == "Light" ? "Light" : "Dark";
+        CheckUpdates = file?.CheckUpdates ?? true;
 
         _applying = true;
         try
@@ -154,6 +182,8 @@ public sealed class ProfileStore : IDisposable
             {
                 var file = new SettingsFile
                 {
+                    Theme = Theme,
+                    CheckUpdates = CheckUpdates,
                     ActiveProfile = ActiveName,
                     Current = Profile.From("current", _settings),
                     CustomProfiles = Profiles.Where(p => !p.BuiltIn).ToList(),

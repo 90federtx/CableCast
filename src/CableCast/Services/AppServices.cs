@@ -31,7 +31,7 @@ public sealed class AppServices : IServiceProvider, IDisposable
         Monitor = new DeviceMonitor(adb, new UsbProbe());
         Home = new HomeViewModel(Monitor, Runner, Settings, Log, t => Navigate?.Invoke(t));
         Wizard = new WizardViewModel(Monitor, () => Navigate?.Invoke(typeof(HomePage)));
-        SettingsVm = new SettingsViewModel(Settings);
+        SettingsVm = new SettingsViewModel(Settings, Profiles, Log);
         ProfilesVm = new ProfilesViewModel(Profiles);
         LogVm = new LogViewModel(Log,
             () => DiagnosticsBuilder.Build(Monitor.Current, Settings, Profiles.ActiveName, Log.AsText()));

@@ -1,4 +1,4 @@
-<Page ScrollViewer.VerticalScrollBarVisibility="Disabled" x:Class="CableCast.Views.SettingsPage"
+﻿<Page Foreground="{DynamicResource TextFillColorPrimaryBrush}" ScrollViewer.VerticalScrollBarVisibility="Disabled" x:Class="CableCast.Views.SettingsPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
@@ -29,6 +29,46 @@
                               SelectedValue="{Binding Settings.Gamepad, Mode=TwoWay}" Margin="0,4,0,8" MinWidth="200" HorizontalAlignment="Left" />
                     <ui:TextBlock Text="{loc:L Settings_GamepadHelp}" TextWrapping="Wrap"
                                   Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                </StackPanel>
+            </ui:Card>
+            <ui:Card Padding="24" Margin="0,16,0,0">
+                <StackPanel>
+                    <ui:TextBlock Text="{loc:L Settings_ThemeTitle}" FontTypography="Subtitle" Margin="0,0,0,8" />
+                    <TextBlock Text="{loc:L Settings_Theme}" />
+                    <ComboBox ItemsSource="{Binding Themes}" DisplayMemberPath="Label" SelectedValuePath="Value"
+                              SelectedValue="{Binding Theme, Mode=TwoWay}" Margin="0,4,0,12" MinWidth="200" HorizontalAlignment="Left" />
+                    <CheckBox Content="{loc:L Settings_CheckUpdates}" IsChecked="{Binding CheckUpdates, Mode=TwoWay}" />
+                </StackPanel>
+            </ui:Card>
+            <ui:Card Padding="24" Margin="0,16,0,0">
+                <StackPanel>
+                    <ui:TextBlock Text="{loc:L Settings_ControllerTitle}" FontTypography="Subtitle" Margin="0,0,0,8" />
+                    <CheckBox Content="{loc:L Settings_ControllerAsPs5}" IsChecked="{Binding Settings.ControllerAsPs5, Mode=TwoWay}" />
+                    <ui:TextBlock Text="{loc:L Settings_ControllerNote}" TextWrapping="Wrap" Margin="0,4,0,12"
+                                  Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                        <ui:Button Content="{loc:L Settings_DetectControllers}" Command="{Binding DetectControllersCommand}" Margin="0,0,8,0" />
+                        <ui:Button Content="{loc:L Settings_ResetMap}" Command="{Binding ResetMapCommand}" />
+                    </StackPanel>
+                    <TextBlock Text="{Binding DetectResult}" TextWrapping="Wrap" Margin="0,0,0,12" />
+                    <ui:TextBlock Text="{loc:L Settings_ButtonMapTitle}" FontTypography="BodyStrong" />
+                    <ui:TextBlock Text="{loc:L Settings_ButtonMapHelp}" TextWrapping="Wrap" Margin="0,0,0,8"
+                                  Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                    <ItemsControl ItemsSource="{Binding ButtonRows}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0,2,0,2">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="220" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{Binding Label}" VerticalAlignment="Center" />
+                                    <ComboBox Grid.Column="1" ItemsSource="{Binding Options}" DisplayMemberPath="Label" SelectedValuePath="Value"
+                                              SelectedValue="{Binding Source, Mode=TwoWay}" MinWidth="200" HorizontalAlignment="Left" />
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
                 </StackPanel>
             </ui:Card>
         </StackPanel>

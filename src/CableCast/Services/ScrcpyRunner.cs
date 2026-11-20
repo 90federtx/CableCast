@@ -62,6 +62,24 @@ public sealed class ScrcpyRunner : IDisposable
             };
             foreach (var a in args) psi.ArgumentList.Add(a);
 
+            if (settings.ControllerAsPs5)
+            {
+                try
+                {
+                    var pads = SdlControllers.Detect(_log);
+                    if (pads.Count > 0)
+                    {
+                        psi.Environment["SDL_GAMECONTROLLERCONFIG"] = ControllerMapping.BuildConfig(pads, settings.ButtonMap);
+                        psi.Environment["SDL_GAMECONTROLLER_USE_BUTTON_LABELS"] = "0";
+                    }
+                    _log.Info(Loc.Format("Log_ControllerPs5", pads.Count));
+                }
+                catch (Exception ex)
+                {
+                    _log.Warn(Loc.Format("Log_ControllerDetectFailed", ex.Message));
+                }
+            }
+
             _stderrTail.Clear();
             _stopRequested = false;
             SetState(MirrorState.Starting);

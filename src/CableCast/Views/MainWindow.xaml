@@ -10,15 +10,26 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
         <ui:TitleBar Grid.Row="0" Title="CableCast"
                      Icon="pack://application:,,,/Resources/app.png" />
 
-        <ui:NavigationView Grid.Row="1" x:Name="RootNavigation" PaneDisplayMode="Left"
+        <Border Grid.Row="1" x:Name="UpdateBanner" Visibility="Collapsed" Padding="16,8"
+                Background="{DynamicResource ControlFillColorSecondaryBrush}">
+            <DockPanel>
+                <ui:Button DockPanel.Dock="Right" Content="{loc:L Update_Dismiss}" Click="OnDismissUpdate" Margin="8,0,0,0" />
+                <ui:Button DockPanel.Dock="Right" Content="{loc:L Update_Download}" Appearance="Primary" Click="OnDownloadUpdate" />
+                <TextBlock x:Name="UpdateText" TextWrapping="Wrap" VerticalAlignment="Center"
+                           Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+            </DockPanel>
+        </Border>
+
+        <ui:NavigationView Grid.Row="2" x:Name="RootNavigation" PaneDisplayMode="Left"
                            IsBackButtonVisible="Collapsed" IsPaneToggleVisible="False"
-                           OpenPaneLength="200">
+                           OpenPaneLength="200" Transition="FadeInWithSlide">
             <ui:NavigationView.MenuItems>
                 <ui:NavigationViewItem Content="{loc:L Nav_Home}" Icon="{ui:SymbolIcon Phone24}" TargetPageType="{x:Type local:HomePage}" />
                 <ui:NavigationViewItem Content="{loc:L Nav_Settings}" Icon="{ui:SymbolIcon Settings24}" TargetPageType="{x:Type local:SettingsPage}" />
