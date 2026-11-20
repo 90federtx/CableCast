@@ -34,5 +34,6 @@ if (-not $SkipInstaller) {
     if (-not $iscc) { throw 'Inno Setup 6 non trovato (winget install --source winget JRSoftware.InnoSetup).' }
     $ver = ([xml](Get-Content src\CableCast\CableCast.csproj)).Project.PropertyGroup.Version | Where-Object { $_ } | Select-Object -First 1
     Run $iscc @("/DAppVersion=$ver", "/DPublishDir=$pub", 'installer\CableCast.iss')
-    Write-Host "`nInstaller: $(Get-ChildItem $out -Filter '*Setup*.exe' | Select-Object -First 1 -ExpandProperty FullName)" -ForegroundColor Green
+    $setup = Get-ChildItem $out -Filter '*Setup*.exe' | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+    Write-Host "`nInstaller: $($setup.FullName)" -ForegroundColor Green
 }
