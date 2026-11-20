@@ -20,6 +20,8 @@ Mostra e controlla il tuo telefono Android sul PC tramite cavo USB. Pensato sopr
 2. **Impostazioni → Sistema → Opzioni sviluppatore** e attiva **Debug USB**.
 3. Collega il cavo. Sul telefono compare "Consentire il debug USB?": spunta "Consenti sempre" e conferma.
 
+Non trovi la voce? Guida per ogni marca (Xiaomi/Redmi, Samsung, Pixel, OnePlus, OPPO, Huawei…): [TUTORIAL-TELEFONI.md](TUTORIAL-TELEFONI.md).
+
 L'app ha una procedura guidata in italiano che ti accompagna in questi passaggi e mostra lo stato del dispositivo (non collegato, non autorizzato, pronto…).
 
 ## Uso

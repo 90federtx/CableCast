@@ -151,4 +151,56 @@
   <data name="Update_Dismiss" xml:space="preserve"><value>Chiudi</value></data>
   <data name="Log_UpdateAvailable" xml:space="preserve"><value>Aggiornamento disponibile: {0}.</value></data>
   <data name="Log_UpdateCheckFailed" xml:space="preserve"><value>Controllo aggiornamenti non riuscito (probabilmente sei offline): {0}</value></data>
+  <data name="Nav_Phones" xml:space="preserve"><value>Guida telefoni</value></data>
+  <data name="Phones_Title" xml:space="preserve"><value>Come attivare il Debug USB</value></data>
+  <data name="Phones_Intro" xml:space="preserve"><value>La voce è nascosta e cambia nome da marca a marca. Scegli il tuo telefono qui sotto e segui i passaggi.</value></data>
+  <data name="Phones_Pick" xml:space="preserve"><value>Marca del telefono</value></data>
+  <data name="Phones_Tip" xml:space="preserve"><value>Scorciatoia: nelle Impostazioni scrivi «sviluppatore» nella barra di ricerca.</value></data>
+  <data name="Phones_Common" xml:space="preserve"><value>Dopo aver attivato il Debug USB</value></data>
+  <data name="Phones_CommonSteps" xml:space="preserve"><value>Collega il telefono al PC con un cavo che trasferisce dati (non solo ricarica).
+Se il telefono lo chiede, scegli «Trasferimento file».
+Sul telefono compare «Consentire il debug USB?»: spunta «Consenti sempre» e conferma.
+Qui in CableCast, nella schermata iniziale, deve comparire «Pronto».</value></data>
+  <data name="Phones_Brand_xiaomi" xml:space="preserve"><value>Xiaomi / Redmi / POCO</value></data>
+  <data name="Phones_Steps_xiaomi" xml:space="preserve"><value>Vai in Impostazioni → Informazioni sul telefono.
+Tocca 7 volte «Versione MIUI» (su HyperOS: «Versione OS» o «Versione HyperOS»).
+Torna in Impostazioni → Impostazioni aggiuntive → Opzioni sviluppatore (non sono nel menu principale).
+Attiva «Debug USB».
+Attiva anche «Debug USB (Impostazioni di sicurezza)»: senza, tastiera, mouse e controller non funzionano. Può chiedere l'accesso all'account Mi e una SIM inserita.
+Attiva «Installa via USB», se c'è.</value></data>
+  <data name="Phones_Brand_samsung" xml:space="preserve"><value>Samsung</value></data>
+  <data name="Phones_Steps_samsung" xml:space="preserve"><value>Vai in Impostazioni → Informazioni sul telefono → Informazioni sul software.
+Tocca 7 volte «Numero build».
+Torna indietro: in fondo alle Impostazioni c'è «Opzioni sviluppatore».
+Attiva «Debug USB».</value></data>
+  <data name="Phones_Brand_pixel" xml:space="preserve"><value>Google Pixel / Motorola / Sony / Nothing</value></data>
+  <data name="Phones_Steps_pixel" xml:space="preserve"><value>Vai in Impostazioni → Informazioni sul telefono.
+Tocca 7 volte «Numero build».
+Vai in Impostazioni → Sistema → Opzioni sviluppatore.
+Attiva «Debug USB».</value></data>
+  <data name="Phones_Brand_oneplus" xml:space="preserve"><value>OnePlus</value></data>
+  <data name="Phones_Steps_oneplus" xml:space="preserve"><value>Vai in Impostazioni → Informazioni sul dispositivo.
+Tocca 7 volte «Numero build».
+Vai in Impostazioni → Sistema → Opzioni sviluppatore.
+Attiva «Debug USB».</value></data>
+  <data name="Phones_Brand_oppo" xml:space="preserve"><value>OPPO / Realme</value></data>
+  <data name="Phones_Steps_oppo" xml:space="preserve"><value>Vai in Impostazioni → Informazioni sul dispositivo → Versione.
+Tocca 7 volte «Numero build».
+Vai in Impostazioni → Impostazioni aggiuntive → Opzioni sviluppatore.
+Attiva «Debug USB».</value></data>
+  <data name="Phones_Brand_vivo" xml:space="preserve"><value>Vivo / iQOO</value></data>
+  <data name="Phones_Steps_vivo" xml:space="preserve"><value>Vai in Impostazioni → Informazioni sul telefono → Informazioni sulla versione.
+Tocca 7 volte «Numero build».
+Vai in Impostazioni → Sistema (o Altre impostazioni) → Opzioni sviluppatore.
+Attiva «Debug USB».</value></data>
+  <data name="Phones_Brand_huawei" xml:space="preserve"><value>Huawei / Honor</value></data>
+  <data name="Phones_Steps_huawei" xml:space="preserve"><value>Vai in Impostazioni → Informazioni sul telefono.
+Tocca 7 volte «Numero build».
+Vai in Impostazioni → Sistema e aggiornamenti → Opzioni sviluppatore.
+Attiva «Debug USB». Se compare la scelta della modalità USB, scegli «Trasferisci file».</value></data>
+  <data name="Phones_Brand_other" xml:space="preserve"><value>Altra marca</value></data>
+  <data name="Phones_Steps_other" xml:space="preserve"><value>Cerca «Informazioni sul telefono» nelle Impostazioni.
+Tocca 7 volte «Numero build» (o «Versione software», «Versione MIUI»).
+Cerca «Opzioni sviluppatore» (spesso sotto Sistema o Impostazioni aggiuntive).
+Attiva «Debug USB».</value></data>
 </root>

@@ -34,6 +34,7 @@
                 <ui:NavigationViewItem Content="{loc:L Nav_Home}" Icon="{ui:SymbolIcon Phone24}" TargetPageType="{x:Type local:HomePage}" />
                 <ui:NavigationViewItem Content="{loc:L Nav_Settings}" Icon="{ui:SymbolIcon Settings24}" TargetPageType="{x:Type local:SettingsPage}" />
                 <ui:NavigationViewItem Content="{loc:L Nav_Profiles}" Icon="{ui:SymbolIcon PersonBoard24}" TargetPageType="{x:Type local:ProfilesPage}" />
+                <ui:NavigationViewItem Content="{loc:L Nav_Phones}" Icon="{ui:SymbolIcon BookQuestionMark24}" TargetPageType="{x:Type local:PhonesPage}" />
                 <ui:NavigationViewItem Content="{loc:L Nav_Log}" Icon="{ui:SymbolIcon TextAlignLeft24}" TargetPageType="{x:Type local:LogPage}" />
             </ui:NavigationView.MenuItems>
             <ui:NavigationView.FooterMenuItems>

@@ -1,0 +1,24 @@
+<Page Foreground="{DynamicResource TextFillColorPrimaryBrush}" ScrollViewer.VerticalScrollBarVisibility="Disabled" x:Class="CableCast.Views.PhonesPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+      xmlns:loc="clr-namespace:CableCast.Services">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Background="Transparent" loc:WheelScroll.Enabled="True">
+        <StackPanel Margin="32,24,32,24" MaxWidth="720" HorizontalAlignment="Left">
+            <ui:TextBlock Text="{loc:L Phones_Title}" FontTypography="Title" />
+            <ui:TextBlock Text="{loc:L Phones_Intro}" Margin="0,8,0,16" TextWrapping="Wrap"
+                          Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+
+            <ui:TextBlock Text="{loc:L Phones_Pick}" FontTypography="BodyStrong" Margin="0,0,0,6" />
+            <ComboBox x:Name="BrandBox" Margin="0,0,0,8" HorizontalAlignment="Stretch"
+                      DisplayMemberPath="Name" SelectionChanged="OnBrandChanged" />
+            <ui:TextBlock Text="{loc:L Phones_Tip}" Margin="0,0,0,16" TextWrapping="Wrap"
+                          Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+
+            <StackPanel x:Name="StepsPanel" />
+
+            <ui:TextBlock Text="{loc:L Phones_Common}" FontTypography="Subtitle" Margin="0,16,0,10" />
+            <StackPanel x:Name="CommonPanel" />
+        </StackPanel>
+    </ScrollViewer>
+</Page>
