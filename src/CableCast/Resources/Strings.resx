@@ -41,6 +41,7 @@
   <data name="Home_Offline_Text" xml:space="preserve"><value>Il telefono è visto ma non risponde (stato: {0}). Scollega e ricollega il cavo, poi sblocca lo schermo.</value></data>
   <data name="Home_Ready_Title" xml:space="preserve"><value>Pronto</value></data>
   <data name="Home_Ready_Text" xml:space="preserve"><value>{0} è collegato e pronto.</value></data>
+  <data name="Home_SelectDevice" xml:space="preserve"><value>Dispositivo da usare</value></data>
 
   <data name="Wizard_Title" xml:space="preserve"><value>Attiva il debug USB</value></data>
   <data name="Wizard_Intro" xml:space="preserve"><value>Serve una sola volta. Le voci possono avere nomi leggermente diversi in base alla marca del telefono.</value></data>
@@ -75,10 +76,21 @@
   <data name="Err_Disconnected" xml:space="preserve"><value>Il telefono è stato scollegato durante il mirroring.</value></data>
   <data name="Err_AdbDaemon" xml:space="preserve"><value>Il servizio adb non risponde. Riprova tra qualche secondo: l'app lo riavvia in automatico.</value></data>
   <data name="Err_ServerConnection" xml:space="preserve"><value>Connessione al telefono non riuscita. Scollega e ricollega il cavo e riprova.</value></data>
-  <data name="Err_Uhid" xml:space="preserve"><value>Il gamepad UHID non è disponibile su questo telefono. Prova la modalità AOA (solo USB) oppure disattiva il gamepad.</value></data>
-  <data name="Err_Aoa" xml:space="preserve"><value>Impossibile usare il gamepad AOA. Serve il cavo USB e un telefono non in uso da altri programmi. In alternativa usa UHID.</value></data>
+  <data name="Err_Uhid" xml:space="preserve"><value>Il gamepad UHID non è disponibile su questo telefono. Prova AOA via USB, sapendo che su Windows può non funzionare durante il mirroring, oppure disattiva il gamepad.</value></data>
+  <data name="Err_Aoa" xml:space="preserve"><value>Impossibile usare il gamepad AOA. Su Windows può non funzionare durante il mirroring perché adb sta già usando il dispositivo USB. Prova UHID o disattiva il gamepad.</value></data>
   <data name="Err_Encoder" xml:space="preserve"><value>Il telefono non riesce a codificare il video con queste impostazioni. Abbassa risoluzione, FPS o bitrate.</value></data>
   <data name="Err_InjectEvents" xml:space="preserve"><value>Il telefono rifiuta i comandi dal PC. Su alcuni modelli serve attivare "Debug USB (impostazioni di sicurezza)" nelle Opzioni sviluppatore.</value></data>
+  <data name="Err_Gamepad" xml:space="preserve"><value>Il telefono non ha accettato l'inoltro del gamepad. Controlla la modalità selezionata e prova l'altra modalità disponibile.</value></data>
+  <data name="Log_AdbConnectionAttempt" xml:space="preserve"><value>Ricerca dei dispositivi Android tramite adb avviata.</value></data>
+  <data name="Log_AdbError" xml:space="preserve"><value>Errore adb: {0}</value></data>
+  <data name="Log_AdbRestartAttempt" xml:space="preserve"><value>Tentativo di riavvio del servizio adb.</value></data>
+  <data name="Log_AdbRestartFailed" xml:space="preserve"><value>Il riavvio del servizio adb non è riuscito.</value></data>
+  <data name="Log_AdbRestartError" xml:space="preserve"><value>Errore durante il riavvio di adb: {0}</value></data>
+  <data name="Log_DeviceConnected" xml:space="preserve"><value>Dispositivo Android pronto: {0}.</value></data>
+  <data name="Log_DeviceDisconnected" xml:space="preserve"><value>Il dispositivo Android non è più pronto.</value></data>
+  <data name="Log_DeviceSelected" xml:space="preserve"><value>Dispositivo selezionato: {0}.</value></data>
+  <data name="Log_DeviceChangedStopMirror" xml:space="preserve"><value>Il dispositivo selezionato è cambiato: arresto il mirroring prima di usare un altro telefono.</value></data>
+  <data name="Log_ControllerMode" xml:space="preserve"><value>Modalità controller selezionata: {0}.</value></data>
   <data name="Settings_Title" xml:space="preserve"><value>Impostazioni mirroring</value></data>
   <data name="Settings_Resolution" xml:space="preserve"><value>Risoluzione massima</value></data>
   <data name="Settings_Fps" xml:space="preserve"><value>FPS massimi</value></data>
@@ -90,7 +102,7 @@
   <data name="Settings_Fullscreen" xml:space="preserve"><value>Schermo intero</value></data>
   <data name="Settings_WindowTitle" xml:space="preserve"><value>Titolo finestra (vuoto = automatico)</value></data>
   <data name="Settings_Gamepad" xml:space="preserve"><value>Gamepad</value></data>
-  <data name="Settings_GamepadHelp" xml:space="preserve"><value>UHID: il gamepad collegato al PC appare come un controller reale sul telefono; funziona anche via Wi-Fi ed è la scelta consigliata. AOA: emula il gamepad tramite il cavo USB, funziona solo con USB e va provata se UHID non è riconosciuto dal gioco.</value></data>
+  <data name="Settings_GamepadHelp" xml:space="preserve"><value>UHID: simula un controller HID tramite il modulo UHID del telefono; è la scelta consigliata, ma può non funzionare su alcune versioni o dispositivi. AOA: usa il protocollo accessori via USB; su Windows può non funzionare durante il mirroring perché adb ha già aperto il dispositivo USB.</value></data>
   <data name="Gamepad_Disabled" xml:space="preserve"><value>Disattivato</value></data>
   <data name="Gamepad_Uhid" xml:space="preserve"><value>UHID (consigliato)</value></data>
   <data name="Gamepad_Aoa" xml:space="preserve"><value>AOA (solo USB)</value></data>
@@ -147,13 +159,14 @@
   <data name="Ps5_dpleft" xml:space="preserve"><value>Croce direzionale ←</value></data>
   <data name="Ps5_dpright" xml:space="preserve"><value>Croce direzionale →</value></data>
   <data name="Settings_CheckUpdates" xml:space="preserve"><value>Cerca aggiornamenti all'avvio (serve internet)</value></data>
-  <data name="Update_Available" xml:space="preserve"><value>È disponibile una nuova versione di CableCast: {0} (tu hai la {1}).</value></data>
+  <data name="Update_Available" xml:space="preserve"><value>È disponibile l'aggiornamento a CableCast {0} (versione installata: {1}). Impostazioni e profili saranno mantenuti.</value></data>
   <data name="Update_Download" xml:space="preserve"><value>Scarica</value></data>
   <data name="Update_Dismiss" xml:space="preserve"><value>Chiudi</value></data>
   <data name="Log_UpdateAvailable" xml:space="preserve"><value>Aggiornamento disponibile: {0}.</value></data>
   <data name="Log_UpdateCheckFailed" xml:space="preserve"><value>Controllo aggiornamenti non riuscito (probabilmente sei offline): {0}</value></data>
   <data name="Update_Downloading" xml:space="preserve"><value>Download dell'aggiornamento in corso… {0}%</value></data>
-  <data name="Update_Ready" xml:space="preserve"><value>Aggiornamento scaricato. Premi «Installa» per chiudere CableCast e avviare l'installazione.</value></data>
+  <data name="Update_Ready" xml:space="preserve"><value>Aggiornamento scaricato. Premi «Aggiorna» per chiudere CableCast e installare la nuova versione mantenendo impostazioni e profili.</value></data>
+  <data name="Update_Upgrade" xml:space="preserve"><value>Aggiorna</value></data>
   <data name="Update_Install" xml:space="preserve"><value>Installa</value></data>
   <data name="Update_Failed" xml:space="preserve"><value>Download non riuscito. Controlla la connessione e riprova.</value></data>
   <data name="Update_Cancel" xml:space="preserve"><value>Annulla</value></data>
@@ -210,9 +223,12 @@ Attiva «Debug USB». Se compare la scelta della modalità USB, scegli «Trasfer
 Tocca 7 volte «Numero build» (o «Versione software», «Versione MIUI»).
 Cerca «Opzioni sviluppatore» (spesso sotto Sistema o Impostazioni aggiuntive).
 Attiva «Debug USB».</value></data>
-  <data name="Xiaomi_Unauthorized" xml:space="preserve"><value>Dispositivo Xiaomi rilevato. Sul telefono tocca Consenti al debug USB, attiva «Consenti sempre da questo computer» e verifica «Debug USB (Impostazioni sicurezza)» nelle Opzioni sviluppatore.</value></data>
-  <data name="Xiaomi_UsbDebuggingOff" xml:space="preserve"><value>Dispositivo Xiaomi rilevato. Attiva Debug USB e Debug USB (Impostazioni sicurezza), quindi imposta il cavo USB su Trasferimento file.</value></data>
+  <data name="Xiaomi_Unauthorized" xml:space="preserve"><value>Dispositivo Xiaomi/Redmi/POCO non autorizzato. Sblocca il telefono e tocca «Consenti» nella richiesta di debug USB. Se non compare, scollega e ricollega il cavo; se necessario revoca le autorizzazioni di debug USB e riprova. Per i comandi di tastiera e mouse, su alcuni modelli serve anche «Debug USB (Impostazioni sicurezza)»; dopo averla attivata può essere necessario riavviare il telefono.</value></data>
+  <data name="Xiaomi_UsbDebuggingOff" xml:space="preserve"><value>Dispositivo Xiaomi/Redmi/POCO rilevato da Windows. Verifica che «Debug USB» sia attivo e che il cavo supporti i dati. Su alcuni modelli, per inoltrare i comandi può servire anche «Debug USB (Impostazioni sicurezza)».</value></data>
   <data name="Xiaomi_Offline" xml:space="preserve"><value>Dispositivo Xiaomi rilevato ma offline. Sblocca lo schermo, usa una porta USB diretta e disattiva temporaneamente l'uso esclusivo di altri strumenti adb.</value></data>
   <data name="Xiaomi_NoDevice" xml:space="preserve"><value>Dispositivo Xiaomi rilevato da Windows ma non da adb. Verifica Trasferimento file, Debug USB e le autorizzazioni di sicurezza MIUI/HyperOS.</value></data>
-  <data name="Xiaomi_Default" xml:space="preserve"><value>Dispositivo Xiaomi rilevato. Sono attivi i controlli specifici per MIUI/HyperOS: mantenere il telefono sbloccato durante la prima autorizzazione.</value></data>
+  <data name="Xiaomi_Default" xml:space="preserve"><value>Dispositivo Xiaomi/Redmi/POCO rilevato. Mantieni il telefono sbloccato durante la prima autorizzazione; le voci e le restrizioni disponibili possono variare in base al modello e alla versione MIUI/HyperOS.</value></data>
+  <data name="Xiaomi_InjectEvents" xml:space="preserve"><value>Il telefono ha rifiutato l'invio degli eventi di input (INJECT_EVENTS). Su alcuni dispositivi Xiaomi occorre attivare «Debug USB (Impostazioni sicurezza)» nelle Opzioni sviluppatore; il progetto scrcpy segnala che può essere necessario riavviare il telefono.</value></data>
+  <data name="Xiaomi_Uhid" xml:space="preserve"><value>Il gamepad UHID non è stato inizializzato. scrcpy indica che UHID può non funzionare su alcune versioni Android o dispositivi; prova AOA via USB oppure disattiva il gamepad.</value></data>
+  <data name="Xiaomi_HyperOs" xml:space="preserve"><value>Rilevata HyperOS {0}. CableCast non può determinare automaticamente quali autorizzazioni siano disponibili sul modello: controlla le Opzioni sviluppatore e i messaggi mostrati dal telefono.</value></data>
 </root>

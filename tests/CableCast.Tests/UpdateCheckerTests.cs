@@ -12,6 +12,9 @@ public class UpdateCheckerTests
     [InlineData("1.2.0", "v1.10.0", true)]
     [InlineData("1.2.0", "v1.1.9", false)]
     [InlineData("1.0.0", "v2.0.0-beta", true)]
+    [InlineData("1.1.4", "1.1.5", true)]
+    [InlineData("1.1.5", "1.1.5", false)]
+    [InlineData("1.1.6", "1.1.5", false)]
     [InlineData("1.0.0", "boh", false)]
     [InlineData("1.0.0", null, false)]
     public void IsNewer_Compares(string current, string? tag, bool expected)

@@ -216,6 +216,25 @@ public class ProfileStoreTests : IDisposable
         Assert.Equal(1, s.MaxFps);
         Assert.Equal(64, s.VideoBitRateMbit);
     }
+
+    [Fact]
+    public void DismissedUpdate_IsPersistedAndOnlySuppressesThatVersion()
+    {
+        var first = Make(out _);
+        first.Load();
+
+        Assert.True(first.ShouldNotifyUpdate("1.1.5"));
+        first.DismissUpdate("1.1.5");
+        Assert.False(first.ShouldNotifyUpdate("1.1.5"));
+        Assert.True(first.ShouldNotifyUpdate("1.1.6"));
+        first.Dispose();
+
+        var second = Make(out _);
+        second.Load();
+        Assert.False(second.ShouldNotifyUpdate("1.1.5"));
+        Assert.True(second.ShouldNotifyUpdate("1.1.6"));
+        second.Dispose();
+    }
 }
 
 public class DiagnosticsBuilderTests

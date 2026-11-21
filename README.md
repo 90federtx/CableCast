@@ -11,7 +11,7 @@ Mostra e controlla il tuo telefono Android sul PC tramite cavo USB. Pensato sopr
 
 ## Installazione
 
-1. Esegui `CableCast-Setup-1.1.4.exe` e segui la procedura guidata.
+1. Esegui `CableCast-Setup-1.1.5.exe` e segui la procedura guidata.
 2. Avvia CableCast dal menu Start.
 
 ## Preparare il telefono (una sola volta)
@@ -25,7 +25,7 @@ L'app ha una procedura guidata in italiano che ti accompagna in questi passaggi 
 
 ## Uso
 
-1. Collega il telefono: nella schermata iniziale deve comparire "Pronto".
+1. Collega il telefono: nella schermata iniziale deve comparire "Pronto". Se ci sono più dispositivi pronti, scegli quello da usare; cambiando dispositivo durante il mirroring, CableCast lo ferma prima di passare al nuovo telefono.
 2. Premi **Avvia**. Per fermare, premi **Ferma** o chiudi la finestra del telefono.
 3. Chiudendo la finestra dell'app, CableCast resta nell'area di notifica (tray). Per uscire davvero usa il menu dell'icona.
 
@@ -41,8 +41,8 @@ Risoluzione massima, FPS massimi, bitrate, audio, schermo spento, schermo sempre
 
 ### Controller: UHID o AOA?
 
-- **UHID** (consigliato): il controller del PC appare al telefono come controller Bluetooth/HID. Funziona con cavo normale e non richiede permessi speciali. Scelta giusta nella maggior parte dei casi.
-- **AOA**: il controller viene inoltrato tramite il protocollo accessori USB di Android. Usalo solo se UHID non viene riconosciuto dal gioco o dal telefono. Con AOA il debug USB e alcune funzioni del cavo possono comportarsi in modo diverso.
+- **UHID** (consigliato): scrcpy simula un controller HID tramite il modulo UHID del telefono; può non funzionare su alcune versioni Android o dispositivi meno recenti.
+- **AOA**: usa il protocollo accessori USB. Su Windows può non funzionare durante il mirroring perché adb ha già aperto il dispositivo USB; se UHID non funziona, prova AOA sapendo di questo limite oppure disattiva il gamepad.
 
 ### Controller "come PS5" e mappa tasti
 
@@ -52,29 +52,30 @@ In Impostazioni puoi attivare «Usa il controller con il layout PS5» (PS4, Swit
 
 Impostazioni → Aspetto: tema Giorno o Notte, applicato subito e ricordato.
 
-Aggiornamenti: all'avvio, se sei online, l'app controlla se esiste una nuova release su GitHub e mostra un banner con il pulsante "Scarica". Si può disattivare in Impostazioni.
+Aggiornamenti: all'avvio, se sei online, l'app controlla se esiste una nuova release su GitHub. Puoi scaricare l'aggiornamento e avviare l'upgrade dall'app. Chiudendo il banner, la stessa versione non viene riproposta; la scelta è ricordata. L'upgrade mantiene impostazioni e profili in `%APPDATA%\CableCast`. La ricerca si può disattivare in Impostazioni.
+
+I registri dettagliati di sessione (adb, scrcpy, connessioni e controller) sono salvati in `%APPDATA%\CableCast\Logs`. Le copie del registro mascherano seriali rilevati, indirizzi di rete, email e il percorso del profilo Windows; i file ruotano e vengono conservati per un periodo limitato.
 
 ## Problemi comuni
 
 | Sintomo | Cosa fare |
 |---|---|
 | "Nessun dispositivo" | Prova un altro cavo o un'altra porta USB; controlla che il telefono sia in modalità trasferimento file. |
-| "Non autorizzato" | Sblocca il telefono e accetta la richiesta di debug USB. Se non compare: Opzioni sviluppatore → "Revoca autorizzazioni debug USB", poi ricollega. |
+| "Non autorizzato" | Sblocca il telefono e accetta la richiesta di debug USB. Se non compare, scollega e ricollega; se necessario revoca le autorizzazioni di debug USB e riprova. |
 | Il gioco non vede il controller | Cambia modalità da UHID ad AOA (o viceversa) e riavvia lo streaming. |
 | Immagine in ritardo | Usa il profilo "Bassa latenza", riduci risoluzione e FPS. |
 | Altro | Vai in **Log** e premi **Copia diagnostica**: il testo (senza numero seriale) è utile per chiedere aiuto. |
 
 ### Xiaomi, Redmi e POCO
 
-Su Xiaomi, Redmi e POCO la compatibilità dipende anche dalle autorizzazioni di MIUI o HyperOS:
+Su alcuni dispositivi Xiaomi, Redmi e POCO l'invio di comandi può richiedere un'autorizzazione aggiuntiva:
 
-- Attiva **Debug USB** e, nelle Opzioni sviluppatore, **Debug USB (Impostazioni sicurezza)**.
+- Attiva **Debug USB**. Se il telefono rifiuta i comandi e l'opzione è disponibile, prova anche **Debug USB (Impostazioni sicurezza)**; scrcpy segnala che può essere necessario riavviare il telefono.
 - Sblocca il telefono durante la prima autorizzazione e tocca **Consenti sempre da questo computer**.
-- Imposta la connessione USB su **Trasferimento file**.
-- Se il telefono resta offline, scollega il cavo, cambia porta USB e ricollega: CableCast prova automaticamente a aggiornare e riavviare adb.
-- Se UHID non viene inizializzato, prova **AOA** solo con il cavo USB oppure disattiva il gamepad.
+- Se la richiesta di autorizzazione non compare, scollega e ricollega il cavo; può essere utile revocare le autorizzazioni debug USB dal telefono e riprovare.
+- Se UHID non viene inizializzato, prova **AOA** via USB o disattiva il gamepad. AOA può non funzionare durante il mirroring su Windows se adb ha già aperto il dispositivo USB.
 
-Il rapporto diagnostico contiene produttore, modello, versione Android, versione MIUI/HyperOS e modalità controller, senza includere il numero seriale.
+Le indicazioni variano per modello e versione MIUI/HyperOS; CableCast non presume che un'opzione sia presente. Il rapporto diagnostico associa i metadati al dispositivo selezionato e non include il numero seriale.
 
 ## Compilare dai sorgenti
 

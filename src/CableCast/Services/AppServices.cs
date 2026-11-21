@@ -23,18 +23,22 @@ public sealed class AppServices : IServiceProvider, IDisposable
     {
         var runner = new ProcessRunner();
         var adb = new AdbService(runner);
-        Log = new LogService();
+        Log = new LogService(AppInfo.LogsDir);
         Settings = new MirrorSettings();
         Profiles = new ProfileStore(AppInfo.SettingsPath, Settings, Log);
         Profiles.Load();
         Runner = new ScrcpyRunner(Log);
-        Monitor = new DeviceMonitor(adb, new UsbProbe());
+        Monitor = new DeviceMonitor(adb, new UsbProbe(), log: Log);
         Home = new HomeViewModel(Monitor, Runner, Settings, Log, t => Navigate?.Invoke(t));
         Wizard = new WizardViewModel(Monitor, () => Navigate?.Invoke(typeof(HomePage)));
         SettingsVm = new SettingsViewModel(Settings, Profiles, Log);
         ProfilesVm = new ProfilesViewModel(Profiles);
-        LogVm = new LogViewModel(Log,
-            () => DiagnosticsBuilder.Build(Monitor.Current, Settings, Profiles.ActiveName, Log.AsText(), deviceInfo: Monitor.DeviceInfo));
+        LogVm = new LogViewModel(Log, () =>
+        {
+            var status = Monitor.Current;
+            return DiagnosticsBuilder.Build(status, Settings, Profiles.ActiveName, Log.AsText(),
+                deviceInfo: Monitor.GetDeviceInfoFor(status.Device?.Serial));
+        });
     }
 
     public void Start() => Monitor.Start();

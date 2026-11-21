@@ -1,4 +1,5 @@
 using CableCast.Services;
+using System.Collections.Generic;
 using Wpf.Ui.Controls;
 
 namespace CableCast.Views;
@@ -9,6 +10,7 @@ public partial class MainWindow : FluentWindow
     {
         InitializeComponent();
         _log = services.Log;
+        _profiles = services.Profiles;
         Title = AppInfo.Name;
 
         RootNavigation.SetServiceProvider(services);
@@ -17,6 +19,8 @@ public partial class MainWindow : FluentWindow
     }
 
     private UpdateInfo? _update;
+    private readonly HashSet<string> _shownUpdateVersions = new(StringComparer.OrdinalIgnoreCase);
+    private readonly ProfileStore _profiles;
     private string? _installerPath;
     private CancellationTokenSource? _cts;
     private bool _downloading;
@@ -24,6 +28,9 @@ public partial class MainWindow : FluentWindow
 
     public void ShowUpdate(UpdateInfo info)
     {
+        if (!_profiles.ShouldNotifyUpdate(info.Version) || !_shownUpdateVersions.Add(info.Version))
+            return;
+
         _update = info;
         UpdateText.Text = Loc.Format("Update_Available", info.Version, AppInfo.Version);
         UpdateBanner.Visibility = System.Windows.Visibility.Visible;
@@ -31,6 +38,7 @@ public partial class MainWindow : FluentWindow
 
     private void OnDismissUpdate(object sender, System.Windows.RoutedEventArgs e)
     {
+        if (_update is not null) _profiles.DismissUpdate(_update.Version);
         _cts?.Cancel();
         UpdateBanner.Visibility = System.Windows.Visibility.Collapsed;
     }
@@ -74,7 +82,7 @@ public partial class MainWindow : FluentWindow
             {
                 _installerPath = path;
                 UpdateText.Text = Loc.Get("Update_Ready");
-                UpdateAction.Content = Loc.Get("Update_Install");
+                UpdateAction.Content = Loc.Get("Update_Upgrade");
             }
             else
             {
@@ -99,7 +107,10 @@ public partial class MainWindow : FluentWindow
         try
         {
             AdbService.KillServerBestEffort(_log);
-            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(_installerPath!) { UseShellExecute = true });
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(_installerPath!)
+            {
+                UseShellExecute = true
+            });
             System.Windows.Application.Current.Shutdown();
         }
         catch (Exception ex)

@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using System.Windows;
 using CableCast.Models;
 using CableCast.Services;
@@ -14,12 +15,38 @@ public partial class HomeViewModel : ObservableObject
     private readonly MirrorSettings _settings;
     private readonly LogService _log;
     private readonly Action<Type> _navigate;
+    private bool _updatingSelection;
+    private string? _selectedDeviceSerial;
+    private string? _lastReadySerial;
 
     [ObservableProperty] private string _title = "";
     [ObservableProperty] private string _text = "";
     [ObservableProperty] private DeviceState _state = DeviceState.Searching;
     [ObservableProperty] private bool _showWizardButton;
     [ObservableProperty] private string _mirrorButtonText = Loc.Get("Home_Start");
+    [ObservableProperty] private bool _showDeviceSelector;
+
+    public ObservableCollection<AdbDevice> Devices { get; } = new();
+
+    public string? SelectedDeviceSerial
+    {
+        get => _selectedDeviceSerial;
+        set
+        {
+            if (!SetProperty(ref _selectedDeviceSerial, value)) return;
+            if (!_updatingSelection)
+            {
+                _monitor.SelectDevice(value);
+                if ((_runner.State is MirrorState.Running or MirrorState.Starting)
+                    && !string.Equals(value, _monitor.Current.Device?.Serial, StringComparison.Ordinal))
+                {
+                    _log.Warn(Loc.Get("Log_DeviceChangedStopMirror"));
+                    _runner.Stop();
+                }
+            }
+            StartStopCommand.NotifyCanExecuteChanged();
+        }
+    }
 
     public HomeViewModel(DeviceMonitor monitor, ScrcpyRunner runner, MirrorSettings settings, LogService log, Action<Type> navigate)
     {
@@ -36,6 +63,26 @@ public partial class HomeViewModel : ObservableObject
 
     private void Apply(DeviceStatus s)
     {
+        if ((_runner.State is MirrorState.Running or MirrorState.Starting)
+            && s.IsReady && _lastReadySerial is not null
+            && !string.Equals(_lastReadySerial, s.Device?.Serial, StringComparison.Ordinal))
+        {
+            _log.Warn(Loc.Get("Log_DeviceChangedStopMirror"));
+            _runner.Stop();
+        }
+        _lastReadySerial = s.Device?.Serial;
+
+        var readyDevices = s.Devices.Where(d => d.State == "device").ToArray();
+        _updatingSelection = true;
+        try
+        {
+            Devices.Clear();
+            foreach (var device in readyDevices) Devices.Add(device);
+            ShowDeviceSelector = readyDevices.Length > 1;
+            SelectedDeviceSerial = s.Device?.Serial;
+        }
+        finally { _updatingSelection = false; }
+
         var (title, text) = DeviceTextMapper.Map(s);
         Title = title;
         Text = text;
@@ -75,7 +122,8 @@ public partial class HomeViewModel : ObservableObject
 
     private bool CanStartStop() => _runner.State switch
     {
-        MirrorState.Stopped => _monitor.Current.IsReady,
+        MirrorState.Stopped => _monitor.Current.IsReady
+            && string.Equals(_monitor.SelectedSerial, _monitor.Current.Device?.Serial, StringComparison.Ordinal),
         MirrorState.Running or MirrorState.Starting => true,
         _ => false,
     };

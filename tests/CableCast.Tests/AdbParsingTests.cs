@@ -129,6 +129,22 @@ public class DeviceStatusResolverTests
             AdbQueryResult.Success(new[] { Dev("A", "unauthorized"), Dev("B", "device") }), NoUsb);
         Assert.Equal(DeviceState.Ready, s.State);
     }
+
+    [Fact]
+    public void Selected_ready_device_wins_over_default_usb_preference()
+    {
+        var s = DeviceStatusResolver.Resolve(
+            AdbQueryResult.Success(new[]
+            {
+                Dev("USB123", "device"),
+                Dev("192.168.1.5:5555", "device")
+            }),
+            NoUsb,
+            "192.168.1.5:5555");
+
+        Assert.Equal("192.168.1.5:5555", s.Device!.Serial);
+        Assert.Equal(2, s.Devices.Count);
+    }
 }
 
 public class XiaomiCompatibilityTests
@@ -169,6 +185,42 @@ public class XiaomiCompatibilityTests
         Assert.Equal("V14", info.MiuiVersion);
         Assert.Equal("1.0", info.HyperOsVersion);
     }
+
+    [Fact]
+    public void XiaomiUsbDebuggingOffDiagnosticUsesWindowsDeviceName()
+    {
+        var status = new DeviceStatus(DeviceState.UsbDebuggingOff, null, "Xiaomi 14");
+        var diagnostics = DiagnosticsBuilder.Build(status, new MirrorSettings(), "Profilo", "");
+
+        Assert.Contains("Dispositivo Xiaomi/Redmi/POCO rilevato da Windows", diagnostics);
+    }
+
+    [Fact]
+    public void XiaomiInjectEventsDiagnosticIncludesSupportedSecuritySettingGuidance()
+    {
+        var device = new AdbDevice("USB123", "device", "Redmi Note 11", "redmi", null, "Xiaomi");
+        var status = new DeviceStatus(DeviceState.Ready, device);
+        var diagnostics = DiagnosticsBuilder.Build(status, new MirrorSettings(), "Profilo",
+            "Injecting input events requires INJECT_EVENTS permission");
+
+        Assert.Contains("INJECT_EVENTS", diagnostics);
+        Assert.Contains("Debug USB (Impostazioni sicurezza)", diagnostics);
+        Assert.Contains("riavviare il telefono", diagnostics);
+    }
+
+    [Fact]
+    public void HyperOsDiagnosticIsOnlyAddedWhenVersionWasDetected()
+    {
+        var device = new AdbDevice("USB123", "device", "POCO F6", "poco", null, "Xiaomi");
+        var status = new DeviceStatus(DeviceState.Ready, device);
+        var info = new AdbDeviceInfo("Xiaomi", "POCO F6", "15", null, "2.0");
+
+        var diagnostics = DiagnosticsBuilder.Build(status, new MirrorSettings(), "Profilo", "",
+            deviceInfo: info);
+
+        Assert.Contains("Rilevata HyperOS 2.0", diagnostics);
+        Assert.Contains("non può determinare automaticamente", diagnostics);
+    }
 }
 
 public class DeviceMonitorReconnectTests
@@ -182,6 +234,99 @@ public class DeviceMonitorReconnectTests
         {
             RestartCount++;
             return Task.FromResult(true);
+        }
+
+        public class DeviceMonitorSelectionTests
+        {
+            private sealed class NoUsb : IUsbProbe
+            {
+                public Task<IReadOnlyList<string>> FindPhonesAsync() =>
+                    Task.FromResult<IReadOnlyList<string>>(Array.Empty<string>());
+            }
+
+            private sealed class MultiDeviceAdb : IAdbService
+            {
+                public Task<AdbQueryResult> ListDevicesAsync(CancellationToken ct = default) =>
+                    Task.FromResult(AdbQueryResult.Success(new[]
+                    {
+                        new AdbDevice("USB_A", "device", "Redmi Note 11", null, null),
+                        new AdbDevice("192.168.1.10:5555", "device", "Pixel 8", null, null)
+                    }));
+
+                public Task<bool> RestartServerAsync(CancellationToken ct = default) =>
+                    Task.FromResult(true);
+
+                public Task<AdbDeviceInfo> GetDeviceInfoAsync(string serial, CancellationToken ct = default) =>
+                    Task.FromResult(new AdbDeviceInfo(
+                        serial == "USB_A" ? "Redmi" : "Google",
+                        serial == "USB_A" ? "Redmi Note 11" : "Pixel 8",
+                        "15", null, null));
+            }
+
+            [Fact]
+            public async Task SelectionChangesActiveDeviceAndInvalidatesPreviousMetadata()
+            {
+                using var monitor = new DeviceMonitor(new MultiDeviceAdb(), new NoUsb());
+                await monitor.RefreshAsync();
+
+                Assert.Equal("USB_A", monitor.Current.Device!.Serial);
+                Assert.Equal(2, monitor.Current.Devices.Count);
+                Assert.Equal("Redmi", monitor.DeviceInfo.Manufacturer);
+
+                monitor.SelectDevice("192.168.1.10:5555");
+                Assert.Equal(AdbDeviceInfo.Empty, monitor.GetDeviceInfoFor("USB_A"));
+                await monitor.RefreshAsync();
+
+                Assert.Equal("192.168.1.10:5555", monitor.Current.Device!.Serial);
+                Assert.Equal("Google", monitor.DeviceInfo.Manufacturer);
+            }
+        }
+
+        public class DeviceMonitorRecoveryTests
+        {
+            private sealed class RecoveringAdb : IAdbService
+            {
+                public int Restarts { get; private set; }
+
+                public Task<AdbQueryResult> ListDevicesAsync(CancellationToken ct = default) =>
+                    Task.FromResult(Restarts == 0
+                        ? AdbQueryResult.Failure("adb offline")
+                        : AdbQueryResult.Success(new[]
+                        {
+                            new AdbDevice("USB123", "device", "Pixel", null, null)
+                        }));
+
+                public Task<bool> RestartServerAsync(CancellationToken ct = default)
+                {
+                    Restarts++;
+                    return Task.FromResult(true);
+                }
+
+                public Task<AdbDeviceInfo> GetDeviceInfoAsync(string serial, CancellationToken ct = default) =>
+                    Task.FromResult(AdbDeviceInfo.Empty);
+            }
+
+            private sealed class NoUsb : IUsbProbe
+            {
+                public Task<IReadOnlyList<string>> FindPhonesAsync() =>
+                    Task.FromResult<IReadOnlyList<string>>(Array.Empty<string>());
+            }
+
+            [Fact]
+            public async Task MonitorRecoversAndReportsDeviceAfterAdbRestart()
+            {
+                var adb = new RecoveringAdb();
+                using var monitor = new DeviceMonitor(adb, new NoUsb());
+
+                await monitor.RefreshAsync();
+                Assert.Equal(DeviceState.AdbUnavailable, monitor.Current.State);
+
+                await monitor.RefreshAsync();
+
+                Assert.Equal(1, adb.Restarts);
+                Assert.Equal(DeviceState.Ready, monitor.Current.State);
+                Assert.Equal("USB123", monitor.Current.Device!.Serial);
+            }
         }
         public Task<AdbDeviceInfo> GetDeviceInfoAsync(string serial, CancellationToken ct = default) =>
             Task.FromResult(AdbDeviceInfo.Empty);
@@ -239,5 +384,48 @@ public class DeviceMonitorReconnectTests
 
         Assert.Equal(2, adb.MetadataCalls);
         Assert.Equal("14", monitor.DeviceInfo.AndroidVersion);
+    }
+
+    private sealed class SwitchingAdb : IAdbService
+    {
+        private int _listCalls;
+
+        public Task<AdbQueryResult> ListDevicesAsync(CancellationToken ct = default)
+        {
+            var device = Interlocked.Increment(ref _listCalls) == 1
+                ? new AdbDevice("DEVICE_A", "device", "Xiaomi 13", null, null)
+                : new AdbDevice("DEVICE_B", "device", "Pixel 8", null, null);
+            return Task.FromResult(AdbQueryResult.Success(new[] { device }));
+        }
+
+        public Task<bool> RestartServerAsync(CancellationToken ct = default) =>
+            Task.FromResult(true);
+
+        public Task<AdbDeviceInfo> GetDeviceInfoAsync(string serial, CancellationToken ct = default) =>
+            Task.FromResult(serial == "DEVICE_A"
+                ? new AdbDeviceInfo("Xiaomi", "Xiaomi 13", "13", "MIUI 14", null)
+                : AdbDeviceInfo.Empty);
+    }
+
+    [Fact]
+    public async Task Device_switch_invalidates_old_metadata_when_new_query_fails()
+    {
+        var adb = new SwitchingAdb();
+        using var monitor = new DeviceMonitor(adb, new NoUsb());
+
+        await monitor.RefreshAsync();
+        Assert.Equal("MIUI 14", monitor.GetDeviceInfoFor("DEVICE_A").MiuiVersion);
+
+        await monitor.RefreshAsync();
+
+        var status = monitor.Current;
+        var metadata = monitor.GetDeviceInfoFor(status.Device!.Serial);
+        var diagnostics = DiagnosticsBuilder.Build(status, new MirrorSettings(), "Profilo", "",
+            deviceInfo: metadata);
+        Assert.Equal("DEVICE_B", status.Device.Serial);
+        Assert.Equal(AdbDeviceInfo.Empty, metadata);
+        Assert.DoesNotContain("Xiaomi 13", diagnostics);
+        Assert.DoesNotContain("MIUI 14", diagnostics);
+        Assert.DoesNotContain("Android: 13", diagnostics);
     }
 }

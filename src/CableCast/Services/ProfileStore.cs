@@ -13,6 +13,7 @@ public sealed class SettingsFile
     public int Version { get; set; } = 1;
     public string Theme { get; set; } = "Dark";
     public bool CheckUpdates { get; set; } = true;
+    public string DismissedUpdateVersion { get; set; } = "";
     public string ActiveProfile { get; set; } = "";
     public Profile? Current { get; set; }
     public List<Profile> CustomProfiles { get; set; } = new();
@@ -61,6 +62,21 @@ public sealed class ProfileStore : IDisposable
 
     /// <summary>Se true, all'avvio l'app cerca aggiornamenti su GitHub.</summary>
     public bool CheckUpdates { get; private set; } = true;
+    public string DismissedUpdateVersion { get; private set; } = "";
+
+    public bool ShouldNotifyUpdate(string version) =>
+        !string.IsNullOrWhiteSpace(version)
+        && !string.Equals(version, DismissedUpdateVersion, StringComparison.OrdinalIgnoreCase);
+
+    public void DismissUpdate(string version)
+    {
+        if (string.IsNullOrWhiteSpace(version) ||
+            string.Equals(version, DismissedUpdateVersion, StringComparison.OrdinalIgnoreCase))
+            return;
+
+        DismissedUpdateVersion = version.Trim();
+        Save();
+    }
 
     public void SetCheckUpdates(bool value)
     {
@@ -118,6 +134,7 @@ public sealed class ProfileStore : IDisposable
 
         Theme = file?.Theme == "Light" ? "Light" : "Dark";
         CheckUpdates = file?.CheckUpdates ?? true;
+        DismissedUpdateVersion = file?.DismissedUpdateVersion ?? "";
 
         _applying = true;
         try
@@ -223,6 +240,7 @@ public sealed class ProfileStore : IDisposable
                 {
                     Theme = Theme,
                     CheckUpdates = CheckUpdates,
+                    DismissedUpdateVersion = DismissedUpdateVersion,
                     ActiveProfile = ActiveName,
                     Current = Profile.From("current", _settings),
                     CustomProfiles = Profiles.Where(p => !p.BuiltIn).ToList(),

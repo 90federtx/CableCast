@@ -1,5 +1,23 @@
 # Changelog
 
+## 1.1.5
+
+### Corretto
+
+- I metadati del telefono vengono invalidati al cambio di seriale; le diagnostiche non riutilizzano produttore, modello o versioni appartenenti al dispositivo precedente.
+- Le informazioni dei dispositivi vengono ritentate senza attribuire al telefono selezionato i dati di un altro dispositivo.
+- L'installer non termina più indiscriminatamente ogni processo `adb.exe` del computer: ferma solo il server adb usato dall'installazione.
+
+### Migliorato
+
+- Con più telefoni pronti è possibile scegliere quale controllare; la preferenza USB resta quella iniziale, i comandi usano il seriale selezionato e il mirroring si ferma prima di passare a un altro telefono.
+- Le notifiche di aggiornamento duplicate sono evitate durante la sessione; chiudendo il banner, la versione viene ricordata anche dopo il riavvio.
+- L'aggiornamento avvia un percorso esplicitamente riconosciuto come upgrade. Impostazioni e profili restano in `%APPDATA%\CableCast`.
+- A parità di versione l'installer offre riparazione o reinstallazione; un aggiornamento a una versione più recente è automatico e una versione precedente richiede conferma.
+- Le diagnostiche distinguono gli errori `INJECT_EVENTS` e UHID e forniscono indicazioni Xiaomi/Redmi/POCO basate sui messaggi effettivi di scrcpy. Le note su MIUI/HyperOS sono condizionali, non presumono la presenza di opzioni.
+- I log di adb, scrcpy, connessione e modalità controller vengono salvati in `%APPDATA%\CableCast\Logs`, con rotazione, retention e mascheramento di identificativi noti, indirizzi di rete, email e percorso profilo.
+- Aggiornati i messaggi dell'upgrade e le istruzioni italiane.
+
 ## 1.1.4
 
 ### Corretto
