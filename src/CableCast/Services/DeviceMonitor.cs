@@ -11,20 +11,47 @@ public sealed class DeviceMonitor : IDisposable
     private CancellationTokenSource? _cts;
     private int _consecutiveFailures;
     private readonly SemaphoreSlim _gate = new(1, 1);
-    private AdbDeviceInfo _deviceInfo = AdbDeviceInfo.Empty;
-    private string? _deviceInfoSerial;
+    private MetadataSnapshot _metadata = new(null, AdbDeviceInfo.Empty);
+    private string? _selectedSerial;
     private int _disconnectedCycles;
-    public AdbDeviceInfo DeviceInfo => Volatile.Read(ref _deviceInfo);
+    private readonly LogService? _log;
+    private string? _lastAdbError;
+    private sealed record MetadataSnapshot(string? Serial, AdbDeviceInfo Info);
+
+    public AdbDeviceInfo DeviceInfo => GetDeviceInfoFor(Current.Device?.Serial);
+    public string? SelectedSerial => Volatile.Read(ref _selectedSerial);
+
+    public AdbDeviceInfo GetDeviceInfoFor(string? serial)
+    {
+        var metadata = Volatile.Read(ref _metadata);
+        return serial is not null && string.Equals(metadata.Serial, serial, StringComparison.Ordinal)
+            ? metadata.Info
+            : AdbDeviceInfo.Empty;
+    }
+
+    public void SelectDevice(string? serial)
+    {
+        if (string.IsNullOrWhiteSpace(serial) ||
+            !Current.Devices.Any(d => d.State == "device" && d.Serial == serial))
+            return;
+
+        if (string.Equals(Volatile.Read(ref _selectedSerial), serial, StringComparison.Ordinal))
+            return;
+
+        Volatile.Write(ref _selectedSerial, serial);
+        Volatile.Write(ref _metadata, new MetadataSnapshot(serial, AdbDeviceInfo.Empty));
+    }
     private static bool IsMetadataIncomplete(AdbDeviceInfo info) =>
         string.IsNullOrWhiteSpace(info.Manufacturer)
         || string.IsNullOrWhiteSpace(info.Model)
         || string.IsNullOrWhiteSpace(info.AndroidVersion);
 
-    public DeviceMonitor(IAdbService adb, IUsbProbe usb, TimeSpan? interval = null)
+    public DeviceMonitor(IAdbService adb, IUsbProbe usb, TimeSpan? interval = null, LogService? log = null)
     {
         _adb = adb;
         _usb = usb;
         _interval = interval ?? TimeSpan.FromSeconds(2);
+        _log = log;
     }
 
     public DeviceStatus Current { get; private set; } = DeviceStatus.Searching;
@@ -37,6 +64,7 @@ public sealed class DeviceMonitor : IDisposable
         if (_cts is not null) return;
         _cts = new CancellationTokenSource();
         var token = _cts.Token;
+        _log?.Info(Loc.Get("Log_AdbConnectionAttempt"));
         _ = Task.Run(async () =>
         {
             while (!token.IsCancellationRequested)
@@ -54,6 +82,17 @@ public sealed class DeviceMonitor : IDisposable
         try
         {
             var query = await SafeListAsync(ct).ConfigureAwait(false);
+            if (query.Ok)
+            {
+                _lastAdbError = null;
+                foreach (var device in query.Devices)
+                    _log?.RegisterSensitiveValue(device.Serial);
+            }
+            else if (!string.Equals(_lastAdbError, query.Error, StringComparison.Ordinal))
+            {
+                _lastAdbError = query.Error;
+                _log?.Warn(Loc.Format("Log_AdbError", query.Error ?? "-"));
+            }
 
             // adb bloccato: dopo 2 errori di fila si riavvia il server una volta.
             if (!query.Ok)
@@ -73,41 +112,54 @@ public sealed class DeviceMonitor : IDisposable
                 catch { /* suggerimento facoltativo */ }
             }
 
-            var ready = query.Devices.FirstOrDefault(d => d.State == "device");
-            if (ready is not null &&
-                (_deviceInfoSerial != ready.Serial || IsMetadataIncomplete(_deviceInfo)))
+            var ready = query.Devices.FirstOrDefault(d => d.State == "device"
+                    && string.Equals(d.Serial, SelectedSerial, StringComparison.Ordinal))
+                ?? query.Devices.FirstOrDefault(d => d.State == "device");
+            if (ready is not null)
             {
-                try
+                var metadata = Volatile.Read(ref _metadata);
+                if (!string.Equals(metadata.Serial, ready.Serial, StringComparison.Ordinal))
                 {
-                    var info = await _adb.GetDeviceInfoAsync(ready.Serial, ct).ConfigureAwait(false);
-                    if (!string.IsNullOrWhiteSpace(info.Manufacturer)
-                        || !string.IsNullOrWhiteSpace(info.Model)
-                        || !string.IsNullOrWhiteSpace(info.AndroidVersion))
-                    {
-                        Volatile.Write(ref _deviceInfo, info);
-                        _deviceInfoSerial = ready.Serial;
-                    }
-                    ready = ready with
-                    {
-                        Manufacturer = info.Manufacturer,
-                        AndroidVersion = info.AndroidVersion,
-                        MiuiVersion = info.MiuiVersion,
-                        HyperOsVersion = info.HyperOsVersion
-                    };
-                    query = AdbQueryResult.Success(query.Devices.Select(d =>
-                        d.Serial == ready.Serial ? ready : d).ToList());
+                    metadata = new MetadataSnapshot(ready.Serial, AdbDeviceInfo.Empty);
+                    Volatile.Write(ref _metadata, metadata);
                 }
-                catch (OperationCanceledException) { throw; }
-                catch { /* i metadati sono facoltativi */ }
+
+                if (IsMetadataIncomplete(metadata.Info))
+                {
+                    try
+                    {
+                        var info = await _adb.GetDeviceInfoAsync(ready.Serial, ct).ConfigureAwait(false);
+                        if (!string.IsNullOrWhiteSpace(info.Manufacturer)
+                            || !string.IsNullOrWhiteSpace(info.Model)
+                            || !string.IsNullOrWhiteSpace(info.AndroidVersion))
+                        {
+                            if (SelectedSerial is null || string.Equals(SelectedSerial, ready.Serial, StringComparison.Ordinal))
+                            {
+                                metadata = new MetadataSnapshot(ready.Serial, info);
+                                Volatile.Write(ref _metadata, metadata);
+                            }
+                        }
+                        ready = ready with
+                        {
+                            Manufacturer = info.Manufacturer,
+                            AndroidVersion = info.AndroidVersion,
+                            MiuiVersion = info.MiuiVersion,
+                            HyperOsVersion = info.HyperOsVersion
+                        };
+                        query = AdbQueryResult.Success(query.Devices.Select(d =>
+                            d.Serial == ready.Serial ? ready : d).ToList());
+                    }
+                    catch (OperationCanceledException) { throw; }
+                    catch { /* i metadati sono facoltativi */ }
+                }
             }
 
             if (!query.Devices.Any(d => d.State == "device"))
             {
-                Volatile.Write(ref _deviceInfo, AdbDeviceInfo.Empty);
-                _deviceInfoSerial = null;
+                Volatile.Write(ref _metadata, new MetadataSnapshot(null, AdbDeviceInfo.Empty));
             }
 
-            var status = DeviceStatusResolver.Resolve(query, phones);
+            var status = DeviceStatusResolver.Resolve(query, phones, SelectedSerial);
             if (status.IsReady)
             {
                 _disconnectedCycles = 0;
@@ -119,13 +171,38 @@ public sealed class DeviceMonitor : IDisposable
                 {
                     await SafeRestartAsync(ct).ConfigureAwait(false);
                     query = await SafeListAsync(ct).ConfigureAwait(false);
-                    status = DeviceStatusResolver.Resolve(query, phones);
+                    status = DeviceStatusResolver.Resolve(query, phones, SelectedSerial);
                     _disconnectedCycles = 0;
                 }
             }
-            if (status != Current)
+            if (status.IsReady)
             {
-                Current = status;
+                var serial = status.Device!.Serial;
+                Volatile.Write(ref _selectedSerial, serial);
+                var metadata = Volatile.Read(ref _metadata);
+                if (!string.Equals(metadata.Serial, serial, StringComparison.Ordinal))
+                    Volatile.Write(ref _metadata, new MetadataSnapshot(serial, AdbDeviceInfo.Empty));
+            }
+            else
+            {
+                Volatile.Write(ref _selectedSerial, null);
+            }
+
+            var changed = status.State != Current.State
+                || status.Device != Current.Device
+                || status.Detail != Current.Detail
+                || !status.Devices.SequenceEqual(Current.Devices);
+            var previous = Current;
+            Current = status;
+            if (changed)
+            {
+                if (!previous.IsReady && status.IsReady)
+                    _log?.Info(Loc.Format("Log_DeviceConnected", status.Device!.DisplayName));
+                else if (previous.IsReady && !status.IsReady)
+                    _log?.Warn(Loc.Get("Log_DeviceDisconnected"));
+                else if (previous.IsReady && status.IsReady
+                    && previous.Device?.Serial != status.Device?.Serial)
+                    _log?.Info(Loc.Format("Log_DeviceSelected", status.Device!.DisplayName));
                 StatusChanged?.Invoke(status);
             }
         }
@@ -142,9 +219,17 @@ public sealed class DeviceMonitor : IDisposable
 
     private async Task SafeRestartAsync(CancellationToken ct)
     {
-        try { await _adb.RestartServerAsync(ct).ConfigureAwait(false); }
+        _log?.Info(Loc.Get("Log_AdbRestartAttempt"));
+        try
+        {
+            if (!await _adb.RestartServerAsync(ct).ConfigureAwait(false))
+                _log?.Warn(Loc.Get("Log_AdbRestartFailed"));
+        }
         catch (OperationCanceledException) { throw; }
-        catch { /* si riprova al giro successivo */ }
+        catch (Exception ex)
+        {
+            _log?.Warn(Loc.Format("Log_AdbRestartError", ex.Message));
+        }
     }
 
     public void Dispose()

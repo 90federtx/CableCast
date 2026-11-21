@@ -24,13 +24,28 @@ public static class DiagnosticsBuilder
             sb.AppendLine($"Android: {deviceInfo?.AndroidVersion ?? d.AndroidVersion ?? "?"}");
             sb.AppendLine($"MIUI: {deviceInfo?.MiuiVersion ?? d.MiuiVersion ?? "n/d"}");
             sb.AppendLine($"HyperOS: {deviceInfo?.HyperOsVersion ?? d.HyperOsVersion ?? "n/d"}");
-            var compat = XiaomiCompatibility.Diagnostic(d with
-            {
-                Manufacturer = deviceInfo?.Manufacturer,
-                Model = d.Model ?? deviceInfo?.Model
-            }, status);
-            if (!string.IsNullOrEmpty(compat)) sb.AppendLine($"Compatibilità: {compat}");
         }
+        var diagnosticDevice = status.Device is { } currentDevice
+            ? currentDevice with
+            {
+                Manufacturer = deviceInfo?.Manufacturer ?? currentDevice.Manufacturer,
+                Model = currentDevice.Model ?? deviceInfo?.Model
+            }
+            : null;
+        var isXiaomi = XiaomiCompatibility.IsXiaomiFamily(
+            diagnosticDevice?.Manufacturer, diagnosticDevice?.Model)
+            || XiaomiCompatibility.IsXiaomiFamily(null, diagnosticDevice?.Product)
+            || XiaomiCompatibility.IsXiaomiFamily(null, status.Detail);
+        var compat = XiaomiCompatibility.Diagnostic(diagnosticDevice, status, status.Detail);
+        if (!string.IsNullOrEmpty(compat)) sb.AppendLine($"Compatibilità: {compat}");
+        if (isXiaomi && logText.Contains("INJECT_EVENTS", StringComparison.OrdinalIgnoreCase))
+            sb.AppendLine(Loc.Get("Xiaomi_InjectEvents"));
+        if (isXiaomi && logText.Contains("UHID", StringComparison.OrdinalIgnoreCase)
+            && (logText.Contains("fail", StringComparison.OrdinalIgnoreCase)
+                || logText.Contains("error", StringComparison.OrdinalIgnoreCase)))
+            sb.AppendLine(Loc.Get("Xiaomi_Uhid"));
+        if (isXiaomi && !string.IsNullOrWhiteSpace(deviceInfo?.HyperOsVersion))
+            sb.AppendLine(Loc.Format("Xiaomi_HyperOs", deviceInfo.HyperOsVersion));
         if (!string.IsNullOrWhiteSpace(status.Detail)) sb.AppendLine($"Dettaglio: {status.Detail}");
         sb.AppendLine();
         sb.AppendLine($"Profilo attivo: {activeProfile}");

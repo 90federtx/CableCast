@@ -98,6 +98,14 @@ public sealed class ScrcpyRunner : IDisposable
             _stderrTail.Clear();
             _stopRequested = false;
             SetState(MirrorState.Starting);
+            _log.RegisterSensitiveValue(device.Serial);
+            var modeKey = settings.Gamepad switch
+            {
+                GamepadMode.Uhid => "Gamepad_Uhid",
+                GamepadMode.Aoa => "Gamepad_Aoa",
+                _ => "Gamepad_Disabled",
+            };
+            _log.Info(Loc.Format("Log_ControllerMode", Loc.Get(modeKey)));
             _log.Info(Loc.Format("Log_Starting", device.DisplayName));
             var redactedArgs = args.Select(RedactSerialArgument);
             _log.Raw("scrcpy " + string.Join(' ', redactedArgs));
@@ -140,6 +148,10 @@ public sealed class ScrcpyRunner : IDisposable
         {
             _log.Error(Loc.Get("Err_Uhid"));
             _log.Info("UHID non inizializzato: prova la modalità AOA solo via USB oppure disattiva il gamepad.");
+        }
+        else if (isErr && ErrorTranslator.FindKey(line) is { } errorKey)
+        {
+            _log.Warn(Loc.Get(errorKey));
         }
         lock (_lock)
         {

@@ -16,6 +16,15 @@ public sealed record AdbDevice(
     public bool IsUsb => !Serial.Contains(':') && !Serial.StartsWith("emulator-", StringComparison.OrdinalIgnoreCase);
 
     public string DisplayName => string.IsNullOrWhiteSpace(Model) ? Serial : Model.Replace('_', ' ');
+    public string SelectionName
+    {
+        get
+        {
+            var suffix = Serial.Length <= 4 ? Serial : Serial[^4..];
+            var name = string.IsNullOrWhiteSpace(Model) ? "Dispositivo Android" : Model.Replace('_', ' ');
+            return $"{name} (…{suffix})";
+        }
+    }
 }
 
 /// <summary>Esito di una interrogazione ad adb.</summary>
@@ -51,4 +60,5 @@ public sealed record DeviceStatus(DeviceState State, AdbDevice? Device = null, s
 {
     public static readonly DeviceStatus Searching = new(DeviceState.Searching);
     public bool IsReady => State == DeviceState.Ready;
+    public IReadOnlyList<AdbDevice> Devices { get; init; } = Array.Empty<AdbDevice>();
 }

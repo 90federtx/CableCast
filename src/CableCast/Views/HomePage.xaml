@@ -13,6 +13,12 @@
                 <ui:TextBlock Text="{Binding Title}" FontTypography="Subtitle" TextWrapping="Wrap" />
                 <ui:TextBlock Text="{Binding Text}" Margin="0,8,0,0" TextWrapping="Wrap"
                               Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                <StackPanel Margin="0,16,0,0" Visibility="{Binding ShowDeviceSelector, Converter={StaticResource BoolToVis}}">
+                    <TextBlock Text="{loc:L Home_SelectDevice}" Margin="0,0,0,4" />
+                    <ComboBox ItemsSource="{Binding Devices}" DisplayMemberPath="SelectionName"
+                              SelectedValuePath="Serial" SelectedValue="{Binding SelectedDeviceSerial, Mode=TwoWay}"
+                              MinWidth="280" HorizontalAlignment="Left" />
+                </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
                     <ui:Button Content="{Binding MirrorButtonText}" Command="{Binding StartStopCommand}" Appearance="Primary" />
                     <ui:Button Content="{loc:L Home_CheckNow}" Command="{Binding CheckNowCommand}" Margin="8,0,0,0" />

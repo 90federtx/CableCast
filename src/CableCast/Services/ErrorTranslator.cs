@@ -24,6 +24,9 @@ public static class ErrorTranslator
         ("could not open video stream", "Err_Encoder"),
         ("inject_events", "Err_InjectEvents"),
         ("could not inject", "Err_InjectEvents"),
+        ("could not forward gamepad", "Err_Gamepad"),
+        ("failed to forward gamepad", "Err_Gamepad"),
+        ("gamepad forwarding", "Err_Gamepad"),
     };
 
     /// <summary>Ritorna la frase tradotta, o null se il testo non è riconosciuto.</summary>

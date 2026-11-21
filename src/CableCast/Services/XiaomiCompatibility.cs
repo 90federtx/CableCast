@@ -13,9 +13,11 @@ public static class XiaomiCompatibility
             || text.Contains("poco", StringComparison.OrdinalIgnoreCase);
     }
 
-    public static string Diagnostic(AdbDevice device, DeviceStatus status)
+    public static string Diagnostic(AdbDevice? device, DeviceStatus status, string? detectedDeviceName = null)
     {
-        if (!IsXiaomiFamily(device.Manufacturer, device.Model) && !IsXiaomiFamily(device.Product))
+        if (!IsXiaomiFamily(device?.Manufacturer, device?.Model)
+            && !IsXiaomiFamily(null, device?.Product)
+            && !IsXiaomiFamily(null, detectedDeviceName))
             return "";
 
         if (status.State == DeviceState.Unauthorized)
