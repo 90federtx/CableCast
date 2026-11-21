@@ -66,6 +66,7 @@ begin
   Adb := ExpandConstant('{app}\tools\scrcpy\adb.exe');
   if FileExists(Adb) then
     Exec(Adb, 'kill-server', '', SW_HIDE, ewWaitUntilTerminated, Code);
+  Exec(ExpandConstant('{sys}\taskkill.exe'), '/F /IM adb.exe', '', SW_HIDE, ewWaitUntilTerminated, Code);
 end;
 
 function NextVersionPart(var Value: String): Integer;

@@ -10,6 +10,7 @@ function Run($exe, $argList) { & $exe @argList; if ($LASTEXITCODE -ne 0) { throw
 
 Step 'scrcpy (versione fissata, SHA256 verificato)'
 & (Join-Path $PSScriptRoot 'scripts\fetch-scrcpy.ps1')
+if ($LASTEXITCODE -ne 0) { throw 'fetch-scrcpy fallito' }
 
 Step 'Build'
 Run dotnet @('build', 'CableCast.sln', '-c', 'Release', '-nologo', '-v', 'q')

@@ -102,7 +102,7 @@
   <data name="Settings_Fullscreen" xml:space="preserve"><value>Schermo intero</value></data>
   <data name="Settings_WindowTitle" xml:space="preserve"><value>Titolo finestra (vuoto = automatico)</value></data>
   <data name="Settings_Gamepad" xml:space="preserve"><value>Gamepad</value></data>
-  <data name="Settings_GamepadHelp" xml:space="preserve"><value>UHID: simula un controller HID tramite il modulo UHID del telefono; è la scelta consigliata, ma può non funzionare su alcune versioni o dispositivi. AOA: usa il protocollo accessori via USB; su Windows può non funzionare durante il mirroring perché adb ha già aperto il dispositivo USB.</value></data>
+  <data name="Settings_GamepadHelp" xml:space="preserve"><value>UHID: simula un controller HID tramite il modulo UHID del telefono; funziona anche via Wi-Fi ed è la scelta consigliata, ma può non funzionare su alcune versioni o dispositivi. AOA: usa il protocollo accessori via USB; su Windows può non funzionare durante il mirroring perché adb ha già aperto il dispositivo USB.</value></data>
   <data name="Gamepad_Disabled" xml:space="preserve"><value>Disattivato</value></data>
   <data name="Gamepad_Uhid" xml:space="preserve"><value>UHID (consigliato)</value></data>
   <data name="Gamepad_Aoa" xml:space="preserve"><value>AOA (solo USB)</value></data>
